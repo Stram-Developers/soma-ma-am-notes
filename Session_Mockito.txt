@@ -1,0 +1,119 @@
+Mockito Framework
+
+Create a new Java project
+Add the 4 files to your src folder. Save the code and execute the Main class.
+
+Student
+StudentService
+StudentRepository | interface
+Main 
+
+The reason behind the exception is that the impl class is not available.
+
+How will the coder perform junit testing on the StudentService class in absence of StudentRepositoryImpl class?
+
+I will arrange a mock implies that I will assume that StudentRepositoryImpl is there...
+Hence, we will use Mockito framework along with JUnit modules.
+Unlike JUnit jars, Mockito jar file is not already available with Eclipse IDE.
+
+So we will download the jar from Maven central repository.
+https://mvnrepository.com/artifact/org.mockito/mockito-all/1.9.5
+
+We will add the jar to the project in eclipse along with junit
+Right click your project 
+Build Path >> Configure Build Path
+Select [Libraries] tab
+Click [Add Library] to add JUnit 4 jar file
+Click [Add External Jars] to add mockito-all jar file into the project
+
+We will add a new Java class for testing StudentService class
+import static org.mockito.Mockito.when;
+public class StudentServiceTest{
+	
+	@Mock
+	StudentRepository repo;
+
+	@InjectMocks
+	StudentService service;
+
+	@Before
+	public void before(){
+		//MockitoAnnotations.initMocks(this);
+	}
+
+	@Test
+	public void test1(){
+	 when(repo.getMarks(101)).thenReturn(82);
+	assertEquals("B",service.computeGrade(new Student(101,"Sam")));
+		verify(repo).getMarks(101);
+		//verify(repo,times(2)).getMarks(101);
+	}
+
+ 	@Test
+	public void test2(){
+	 when(repo.getMarks(101)).thenReturn(93);
+	assertEquals("A",service.computeGrade(new Student(101,"Sam")));
+	}
+
+	@Test
+	public void test3(){		
+		Student s=new Student(105,"Rai");
+		doNothing().when(repo).saveRecord(s);
+		assertTrue(service.saveRecord(s));
+		verify(repo,times(1)).saveRecord(s);
+	}
+
+	@Test
+	public void test4(){
+		Student s=new Student(105,"R");
+		doNothing().when(repo).saveRecord(s);		
+		assertFalse(service.saveRecord(s));
+		verify(repo,times(0)).saveRecord(s);
+	}
+
+	@Test
+	public void test5(){
+		when(repo.findById(101)).thenReturn(new Student(101,"Arjun"));
+		assertNotNull(service.getStudent(101));
+	}
+
+	@Test(expected=java.lang.NullPointerException.class)
+	public void test6(){
+		when(repo.findById(105)).thenThrow(new NullPointerException("error"));
+		assertNull(service.getStudent(105));
+	}
+
+}
+
+Mocking is done when you invoke methods of a class that has external communication like database calls or rest calls.
+
+Use @Mock to create mocks which are needed to support testing of class to be tested.
+
+Use @InjectMocks to create class instances which needs to be tested in test class.
+
+MockitoAnnotations.initMocks(this);
+we can enable Mockito annotations programmatically by invoking MockitoAnnotations.initMocks().
+
+How can I check that the repo.getMarks() this method is being called???
+Mockito provides the method verify()
+
+a) verifying that the getMarks() was called from service class only once.
+		verify(repo).getMarks(101);
+b) verifying that the getMarks() was called from service class twice
+		verify(repo,times(2)).getMarks(101);
+
+Methods from Mockito
+----------------------
+//methods with non void return type
+when(repo.getMarks(101)).thenReturn(92);
+
+//methods with void return type
+doNothing().when(repo).saveRecord(s);
+
+//methods to throw an exception at runtime
+when(repo.findById(105))
+	.thenThrow(new NullPointerException("error"));
+
+TBD 
+To introduce Maven concept
+

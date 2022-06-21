@@ -1,0 +1,186 @@
+TBD
+4th Apr:
+List and Keys
+Handling user input
+Component Life cycle
+Conditional Rendering
+
+5th Apr: React Forms
+6th Apr: Integration example using Fetch API
+7th Apr: Practice session
+8th Apr: React KBA for Stage 3
+
+There are total 13 hands-on.
+
+Components
+- class component
+- function component
+
+Props is a way of passing data from one component to another component.
+//function component
+	Hello {props.name}
+//class component
+	Hello {this.props.name}
+<ClassComp name="Preety"/>
+
+State is a private variable of a class component which can be altered/modified.
+class ClassComp extends Component{
+	constructor(props){
+		super(props);
+		this.state={
+			name:this.props.name
+		}
+	}
+	render(){
+		return(<><h2> JSX </h2></>);
+	}
+}
+
+Handle events
+class ClassComp extends Component{
+	constructor(props){
+		super(props);
+		this.state={
+			name:this.props.name,
+			line1:'Write something'
+		}
+	this.handleClick=this.handleClick.bind(this);
+	this.f1=this.f1.bind(this);
+	}
+	render(){
+		return(<>
+		<h2> JSX </h2>
+	<button onClick={this.handleClick}>Click</button>
+  	Enter your wish: 
+	<input type="text" onChange={this.f1}/>
+			</>);
+	}
+
+	handleClick(){
+		this.setState({name:'Welcome to class'});
+	}
+
+	f1(e){
+		this.setState({line1:e.target.value});
+	}
+}
+
+a) React Lifecycle events
+The componentDidMount() method runs after the component output has been rendered to the DOM.
+Mounting means putting elements into the DOM.
+
+React has four built-in methods that gets called, in this order, when mounting a component:
+1. constructor()
+2. getDerivedStateFromProps()
+3. render()
+4. componentDidMount()
+
+The render() method is required and will always be called, the others are optional and will be called if you define them.
+
+FYR: https://www.w3schools.com/react/react_lifecycle.asp
+
+How to handle multiple inputs with the same event handler?
+Ensure the value for the name attribute of HTML input elements MUST BE IDENTICAL TO the state variable name.
+
+class ClassComp2 extends Component{
+    constructor(props){
+        super(props);
+        this.state={name:'constructor called',firstName:'',lastName:''}
+        this.handleChange=this.handleChange.bind(this);       
+    }
+
+    componentDidMount(){
+        setTimeout(() =>{
+            this.setState({name:'componentDidMount called'})
+        },5000)
+    }
+
+/* single handler: multiple inputs */
+    handleChange(e){
+        this.setState({[e.target.name]:e.target.value})
+    }    
+
+    render(){
+        return(
+            <>
+               <p>{this.state.name}</p>
+               <h2>Hello {this.state.firstName} {this.state.lastName}</h2>
+                <div>
+          First Name:<input type="text" name="firstName" onChange={this.handleChange}/>  
+          Last Name:<input type="text"  name="lastName" onChange={this.handleChange}/> 
+              </div>             
+
+            </>
+        )
+    }
+
+}
+
+export default ClassComp2
+
+How to add conditional rendering in your React App?
+This can help you conditionally render a part of the component while the rest of the output doesn't change.
+
+ this.state={name:'constructor called',firstName:'',lastName:'',show:true}
+
+//render()
+ <p>
+    <button style={{color:'white',backgroundColor:'green'}} 
+ onClick={() =>this.setState({show: !this.state.show})}>Toggle Screen</button>
+      {this.state.show?<ClassComp fname='Sachin' lname='Tendulkar' scoreObtd='455'/>
+                    :null}
+                   
+ </p>
+
+FYR: https://reactjs.org/docs/conditional-rendering.html
+
+List and Keys in React
+//Cart.js
+export default function Cart(props){
+    const listItems=props.items.map(
+        (item) =><li key={item.pcode}>{item.pname} {item.price}</li>
+    )
+    return(
+        <>
+            {listItems}        
+        </>
+    )
+}
+
+//ClassComp2.js
+ products:[
+            {pcode:1,pname:'apple',price:50},
+            {pcode:2,pname:'mango',price:65},
+            {pcode:3,pname:'orange',price:45}
+        ] 
+ <h2>Summer Fruits</h2>
+         <ul>
+               <Cart items={this.state.products}/>
+         </ul>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,137 @@
+Web MVC
+Model View Controller design pattern
+
+View layer is the presentation layer which is the interface of your application to the users. The client/users see the interface on their respective web browser windows.
+This layer is created using HTML, CSS and Javascript, jquery,
+Bootstrap, JSP etc...
+We can also use Angular and React to create such web pages. 
+
+Controller is the intermediate layer which controls the flow from
+the view layer for being processed in the back end. The response coming down the back end is also sent back to the view layer via the controller. This role is played by a special Java class known as Servlet.
+
+Model is the entire back end layer. All the java classes we create either for handling business logic (service layer), database operations (repository layer) and java bean classes are members of this layer.
+
+We will use Apache Tomcat Server as our web server.A web server is an application used to host and publish web applications/web services and we can send request for such applications through the browser address bar in the form of url to it. Web server handles the request gets the response from the application and passes back to the browser from which the reuqest had come.
+
+a) Catalina | Used to create and maintain the life cycle of user defined servlet classes.
+b) Jasper | Used to create and maintain the life cycle of JSP pages
+c) Coyote | handles HTTP protocol
+
+Lets us create our web mvc application.
+We will first change the perspective to Java EE(default).
+
+File >> New >> Dynamic Web Project
+Dynamic Web Module version : 3.0
+
+Java Resources
+src (We will create all our Java source files)
+
+web content
+(contain all the HTML, CSS, images, js, jsp,... pages)
+WEB-INF [restricted area]
+lib (place to keep jar files like mysql-connector)
+
+WAR (Web Archive) is a compressed file which you can deploy on
+some remote web server. The META-INF folder has one important file known manifest file...
+
+http://localhost:9000/mera-web-app/home.html
+
+Add the following classes in the src folder
+com.cts.model.User
+com.cts.service.UserService
+com.cts.controller.HomeController (New >> Servlet)
+
+The user defined servlet (HomeController.java) is a class which inherits the javax.servlet.http.HttpServlet abstract class
+
+The HttpServlet class further inherits the javax.servlet.GenericServlet abstract class.
+
+The GenericServlet class implements the javax.servlet.Servlet interface.
+
+The Servlet interface has three life cycle method definitions.
+init(), service() and destroy(). The service() is called for serving each HTTP request.
+
+The GenericServlet class implements only the init() and destroy() methods leaving the service() method as abstract.
+
+The HttpServlet overrides the service() method to further create two handy methods doGet() and doPost(). The doGet() method will handle HTTP GET requests and doPost() will handle HTTP POST requests. The class is abstract to prevent someone from creating an instance of this class.
+
+What is this @WebServlet({"/login","/register"})?
+The @WebServlet annotation is used for url mapping.
+URL patterns
+
+@WebServlet({"/login","/register"})
+public class HomeController extends HttpServlet{
+...
+}
+
+khushi and genius (url patterns) and Kanchan (physical file name) are all names of the same person
+
+protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		// TODO Auto-generated method stub
+	response.getWriter().append("Served at: ").append(request.getContextPath());
+	}
+
+HttpServletRequest and HttpServletResponse are interfaces whose
+instances are created and managed by the servlet container (catalina). The so called concrete class which had implemented this interface but I don't get to know about it.
+
+RequestDispatcher is an interface used to dispatch the control
+to some other resource(.html page,.jsp page, another servlet url pattern)
+ 
+RequestDispatcher dispatcher =
+	request.getRequestDispatcher("<<target>>");
+a) dispatcher.forward(request,response);
+The response of the current page where the dispatcher is called will be ignored/skipped
+
+b) dispatcher.include(request,response);
+The response of the current page where the dispatcher is called will be combined with the response from the target page.
+
+response.setContentType("text/html");
+It is used to instruct what to do with the response.
+
+home.html -> HomeController -> UserService
+a) Not Okay (false ) -> home.html
+b) Okay (true) -> success.html
+
+TBD
+JSP and JSTL core tags [1 tekstac handson]
+
+FYR:
+https://beginnersbook.com/2013/05/servlet-tutorial/
+Explore the MVC design pattern
+Know about JSP
+Know about JTSL
+
+Tuesday, we will start with Spring MVC using Spring Boot
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

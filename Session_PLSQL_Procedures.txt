@@ -1,0 +1,220 @@
+Bootstrap
+SQL
+PLSQL
+Unix and shell scripting
+-------------------------SQL CC
+
+RAG score is based on performance in CC and ICT
+RAG score also depends on the attempt of CC (onschedule,catchup) and ICT(attempt #).
+
+ICT will be of 4 hours duration.
+Stage 1 ICT will be based on Core Java,JDBC and SQL
+
+Topics:
+Introduction to PLSQL:: 29th
+Procedures and Functions::29th
+Packages :: 31st
+Triggers ::31st
+Cursors ::1st
+Exception Handling ::1st
+Unix commands ::2nd
+Unix commands ::3rd
+
+SQL CC :: 4th Feb
+
+PLSQL (Procedural Language) is an extension of SQL.
+We can write various looping constructs,decision making
+constructs, variables of different data types, handle exceptions, create arrays....
+
+Oracle PLSQL
+Oracle Live
+
+select current_timestamp,user from dual;
+The dual is a dummy table which is accessible to every user connected for experimental commands.
+The owner of this table is SYS and no one has the permission to drop or delete or modify this table. You can only use it 
+for query purposes.
+The date format in Oracle is [dd-MON-yy]: 29-JAN-22
+
+select sysdate from dual;
+
+PLSQL starts off with a anonymous block
+BEGIN
+	dbms_output.put_line('Good evening');
+END;
+/
+
+The begin and end makes the mandatory section of your code.
+The begin .. end block needs to have atleast one line in it.
+
+The dbms_output is the name of the package
+The put_line is a stored procedure which is part of the package dbms_output.
+
+We plan to declare certain variables.
+There are several scalar data types found in PLSQL
+a) number(p,s) here p is total number of digits
+s means digits after decimal point
+number(3,2) max=>9.99
+b) char and varchar
+c) boolean :: true/false
+
+BLOB :: binary large object is used to store images
+
+DECLARE
+	v_name varchar(50);
+	n_age number(3);
+BEGIN
+	v_name := 'Soma';
+	n_age := 36;
+	dbms_output.put_line('Name '||v_name);
+	dbms_output.put_line('Age '||n_age);
+END;
+/
+
+The := is the assignment operator.
+To set some value by default:
+	v_skill varchar(50) default 'Coder';
+Let us explore if else concept
+Ex 1:
+declare
+    nNum number(3);
+begin
+    nNum:=89;
+    if mod(nNum,2)=0 and nNum <=50 then
+        dbms_output.put_line(nNum||' is even no le 50');
+    elsif mod(nNum,2)=0 and nNum >50 then
+        dbms_output.put_line(nNum||' is even no gt 50');
+    else
+        dbms_output.put_line(nNum||' is odd');
+    end if;
+end;
+/
+ 
+Let us explore case function in PLSQL
+declare
+    v_ans varchar(20);
+    v_response varchar(20);
+begin
+    v_ans:='not sure';
+   select case
+    when v_ans='yes' then 'Lets continue'
+    when v_ans='no' then 'Lets repeat'
+    else 'okay'
+    end case into v_response from dual;
+    dbms_output.put_line(v_response);
+end;
+/
+
+PLSQL can be used for performing DML operations, SELECT operations simply as well as DDL operations (in a different fashion)
+
+An example of SELECT query through PLSQL.
+declare
+    v_first varchar(100);
+    v_last varchar(100);
+    n_salary number(10,2);
+begin
+    select first_name,last_name,salary
+    into v_first,v_last,n_salary
+    from hr.employees
+    where employee_id=202;
+    
+    dbms_output.put_line('Name: '||v_first||' '||v_last);
+    dbms_output.put_line('Salary: '||n_salary);
+end;
+/
+ 
+Use of %TYPE in variable declaration
+%TYPE is used when you want to copy the data type and size
+of a column for a plsql variable.
+	v_first hr.employees.first_name%type;
+
+Let us explore looping constructs in PLSQL
+
+-- basic loop
+declare
+    nNum number(3) := 5;
+    nK number(3) :=1;
+begin
+    loop 
+        dbms_output.put_line(nK);
+        nK:=nK+1;
+        exit when nk>nNum;
+    end loop;
+end;
+/
+
+-- while loop
+declare
+    nNum number(3) := 5;
+    nK number(3) :=1;
+begin
+    while nK<=nNum loop 
+        dbms_output.put_line(nK);
+        nK:=nK+1;
+    end loop;
+end;
+/
+
+-- for loop
+declare
+    nNum number(3) := 15;
+begin
+    for nK in reverse 1..nNum loop 
+        dbms_output.put_line(nK);
+    end loop;
+end;
+/
+
+normal [1,2,3,...,15]
+reverse [15,14,13,...,1]
+
+Perform DML operation using PLSQL
+create table person
+(
+name varchar(50),
+age number(3)
+);
+
+declare
+	v_name person.name%type;
+	n_age person.age%type;
+begin
+	v_name:='Shivam';
+	n_age:=23;
+	insert into person
+	values(v_name,n_age);
+	
+	if SQL%ROWCOUNT=1 then
+		dbms_output.put_line('Record inserted');
+	end if;
+end;
+/
+
+When we write any plsql coding the PLSQL engine creates a private SQL area (implicit cursor)for the results of that command to be kept.
+
+To access the cursor, we get 4 cursor attributes:
+a) %ROWCOUNT | no of rows affected
+b) %ISOPEN | boolean;cursor is currently open or not
+Will provide FALSE always for IMPLICIT CURSOR
+c) %FOUND | boolean; whether more rows are there to be fetched
+d) %NOTFOUND | same as above
+
+Why explicit cursors will be required?
+
+
+
+
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+

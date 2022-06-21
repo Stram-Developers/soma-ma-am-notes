@@ -1,0 +1,210 @@
+Spring MVC form validations
+
+Case Study 1|
+We will have the <form> in the home.jsp page
+We will validate using the Controller class
+We will generate the response through success.jsp page
+
+Why not using client side validation?
+1. Client side scripting can be blocked
+2. If the view layer is not present
+Web service is a web application w/o the view layer.
+The incoming data is in JSON format
+
+Suppose you have few <form> input elements from which you want to capture date in your handler metod.
+[
+@RequestParam("fname") String firstName,
+@RequestParam("lname") String lastName,
+@RequestParam("gender") String gender
+]
+
+When the number of <form> input elements is quite big..
+We can create a model class and map the view layer with the model class instance using @ModelAttribute annotation.
+
+The <input> element's name attribute and the class private variable should have the same name.
+private String firstName;
+	<input type="text" name="firstName"/>
+
+@PostMapping("/save")
+public String process(@ModelAttribute("person") Person person,BindingResult result) {
+	
+boolean error = false;
+if (person.getFirstName().isEmpty()) {			result.rejectValue("firstName", "", "First Name not found");
+			error = true;
+	}
+
+	if(error)
+		return "home";
+	else
+		 return "success";
+}
+}
+"Once present in the model, the arguments fields should populate from all request parameters that have matching names."
+https://www.baeldung.com/spring-mvc-and-the-modelattribute-annotation#:~:text=%40ModelAttribute%20is%20an%20annotation%20that,submitted%20from%20a%20company's%20employee.
+
+void rejectValue(@Nullable
+                 String field,
+                 String errorCode,
+                 String defaultMessage)
+field - the field name (may be null or empty String)
+errorCode - error code, interpretable as a message key
+defaultMessage - fallback default message
+
+public class Person {	
+	private String firstName;	
+	private String lastName;	
+	private String email;	
+	@DateTimeFormat(pattern = "yyyy-MM-dd")	
+	private LocalDate birthDate;
+
+...
+}
+
+Case Study 2
+We will now modify the exisiting demo with spring mvc form tags instead of HTML form tags.
+
+The value for attribute "path" is the private variable name
+defined in the Person class.
+The modelAttribute mentioned in the <frm:form> tag tells that this form is backed by instance of Person class.
+<form:errors> tag helps to display the validation error message easily.
+The Spring MVC form tags can be seen as data binding-aware tags that can automatically set data to Java object/bean and also retrieve from it.
+
+<%@taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
+
+ <form:form method="post" action="save" modelAttribute="person">
+First Name: <form:input path="firstName" />
+		<form:errors path="firstName" cssStyle="color:red;" /><br/>
+		
+		Last Name:<form:input path="lastName"/>
+		<form:errors path="lastName" cssStyle="color:red;" /><br/>
+		
+		Email:<form:input type="email" path="email"/>
+		<form:errors path="email" cssStyle="color:red;" /><br/>
+		
+		Birth Date:<form:input type="date" path="birthDate"/>
+		<form:errors path="birthDate" cssStyle="color:red;" /><br/>
+		
+		<input type="submit"/>
+</form:form>
+
+@GetMapping("/")
+	public String showHome(
+			@ModelAttribute("person") Person person) {
+		return "home";
+	}
+
+Case Study 3
+Validations using annotations
+
+Modify the private data members of Person class
+to include the annotations:
+[javax.validation.constraints]
+
+@NotEmpty with String data type
+@NotNull with non String data type
+@Size(max=50, min=2, message="") //String
+@Max(value="5",message="")//numeric
+@PastOrPresent
+@DateTimeFormat
+.....
+
+We MUST ADD @Valid before @ModelAttribute annotation to inform Spring Application context to validate using annotations.
+
+The reference to the BindingResult interface MUST BE after the @ModelAttribute annotation to fetch the errors due to validation failure.
+
+Add in the HomeController
+@PostMapping("/saveOne")
+public String processOne(@Valid @ModelAttribute("person") Person person, BindingResult result,Model model) {
+		if (result.hasErrors()) {
+			return "home";
+		}
+		return "success";
+}
+
+
+	@NotEmpty(message="FirstName is missing")
+	private String firstName;
+	@NotEmpty(message="LastName is missing")
+	private String lastName;
+	
+	@NotEmpty(message="Email is missing")
+	@Email(message="Email format is incorrect")
+	private String email;
+	
+	@DateTimeFormat(pattern = "yyyy-MM-dd")
+	@PastOrPresent
+	@NotNull
+	private LocalDate birthDate;
+
+
+<form:form action="saveOne" >
+...
+</form:form>
+
+FYR
+https://web.archive.org/web/20161120115428/http://codetutr.com/2013/05/28/spring-mvc-form-validation/
+
+Case Study 4 | Custom Validator example
+
+Add the following handler method in the HomeController class
+@Autowired
+PersonValidator validator;
+
+@PostMapping("/saveTwo")
+public String processTwo(@ModelAttribute("person") Person person, BindingResult result) {
+	validator.validate(person, result);
+	if (result.hasErrors()) {
+			return "home";
+	}
+	return "success";
+}
+
+We will use our own validator instead of @Valid annotation.
+
+@Component
+public class PersonValidator implements Validator {
+
+	public boolean supports(Class clazz) {
+		return Person.class.isAssignableFrom(clazz);
+	}
+
+public void validate(Object target, Errors errors) 
+	{
+	Person person = (Person) target;
+	/*Utility class offering convenient methods for invoking a Validator  and for rejecting empty fields. */
+	ValidationUtils.rejectIfEmptyOrWhitespace(errors, "firstName", "", "First name is required.");
+	ValidationUtils.rejectIfEmptyOrWhitespace(errors, "lastName", "", "Last name is required.");				ValidationUtils.rejectIfEmptyOrWhitespace(errors, "email", "", "Email is required.");
+	ValidationUtils.rejectIfEmpty(errors,"birthDate","","Birth date is required.");
+		
+//custom validation rule
+if(person != null && person.getBirthDate()!= null 
+	&& person.getBirthDate().isAfter(LocalDate.now())){
+	errors.rejectValue("birthDate", "", "Birth date cannot be future date");
+		}
+		
+if(person!=null && person.getFirstName()!= null && person.getFirstName().length()<2) {
+	errors.rejectValue("firstName", "", "FirstName too short");
+}
+		
+if(person!=null && person.getEmail()!= null && person.getEmail().endsWith("@gmail.com")==false) {
+	errors.rejectValue("email", "", "Email should be a gmail account");
+		}
+	}
+}
+
+TBD
+----
+Spring MVC i18n
+Exception handling in Spring MVC applications
+using @ExceptionHandler and @ControllerAdvice
+Difference between ModelAndView class, Model interface
+and ModelMap interface.
+Another use of @ModelAttribute annotation when mentioned
+on top of the handler method
+
+19th March: Practice application on Spring MVC
+
+
+
+
+

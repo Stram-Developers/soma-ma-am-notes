@@ -1,0 +1,195 @@
+12+7+6=25 need to solve by 20th March 2022
+
+1. Work with collections like Array, List in xml based configuration
+2. Use of @ComponentScan annotation and its xml equivalent
+3. Use of @PropertySource annotation and its xml equivalent
+4. Special XML approach concepts
+- bean definition inheritance
+- inner bean
+
+TBD
+Spring Core with JdbcTemplate
+
+1. Work with collections like Array, List in xml based configuration
+    <bean class="com.cts.model.Laptop" id="laptop2">
+    	<constructor-arg index="0" value="Lenovo"/>    
+    </bean>
+    
+    <bean class="com.cts.model.SomeClass" id="someClass">
+    	<property name="list">
+    		<list>
+    			<value>orange</value>
+    			<value>violet</value>
+    			<value>white</value>   			
+    		</list>
+    	</property>
+    	<property name="laptops">
+    		<list>
+    			<ref bean="laptop1" />
+    			<ref bean="laptop2"/> 			
+    		</list>
+    	</property>
+    	<property name="map">
+    		<map>
+    			<entry key="101" value="mango"/>
+    			<entry key="102" value="litchi"/>
+    			<entry key="103" value="papaya"/>
+    		</map>    	
+    	</property>
+    </bean>
+
+"value-ref attribute"
+	<bean id="publisher1" class="org.kodejava.spring.core.Publisher">
+        <property name="name" value="EMI Studios" />
+    </bean>
+ 	<bean id="publisher2" class="org.kodejava.spring.core.Publisher">
+        <property name="name" value="Marvel Studios" />
+    </bean>
+
+<bean>
+	<property name="publisher">
+            <map>
+ <entry key="P101" value-ref="publisher1" />
+ <entry key="P102" value-ref="publisher2" />
+            </map>
+        </property>
+</bean>
+
+FYR: https://kodejava.org/how-do-i-inject-collections-using-map-element-in-spring/
+
+2. Use of @ComponentScan annotation and its xml equivalent
+@Component | Indicates that an annotated class is a "component".Such classes are considered as candidates for auto-detection when using annotation-based configuration and classpath scanning. 
+
+@ComponentScan(basePackages="com") is written along with @Configuration annotation| The Spring container will scan all the packages under the base package to look for classes annotated with @Component or equivalent annotation and thereby create an instance of the class.
+
+The @Service, @Controller, @Repository are all equivalent annotations to @Component.
+
+@Service
+public class Calculator {
+	public int add(int a,int b) {
+		return a+b;
+	}
+}
+
+@Configuration
+@ComponentScan(basePackages="com")
+public class AppConfig {
+	...
+}
+
+Configures component scanning directives for use with @Configuration classes.Provides support parallel with Spring XML's <context:component-scan> element. 
+
+ <context:component-scan base-package="com"></context:component-scan>
+
+3. Use of @PropertySource annotation and its xml equivalent
+It helps to read the .properties file kept under the src/main/resources folder.
+
+@Configuration
+@ComponentScan(basePackages="com")
+@PropertySource("classpath:db.properties")
+public class AppConfig {
+	
+	//org.springframework.core.env.Environment;
+	@Autowired
+	Environment env;
+	
+	@Bean
+	public DbUtil util() {
+		DbUtil db=new DbUtil();
+		db.setDriver(env.getProperty("driver"));
+		db.setUsername(env.getProperty("username"));
+		db.setPassword(env.getProperty("password"));		
+		return db;		
+	}
+...
+}
+
+XML based approach:
+
+ <context:property-placeholder location="classpath:db.properties"/>
+    
+    <bean class="com.cts.model.DbUtil" id="dbOne">
+    	<property name="driver" value="${driver}"/>
+        <property name="username" value="${username}"/>
+    	<property name="password" value="${password}"/>
+    </bean>
+
+** 4. Special XML approach concepts
+- inner bean
+public class Point {
+	private int xCoord;
+	private int yCoord;
+}
+public class Line{
+	private Point p1;
+	private Point p2;
+}
+
+spring.xml
+-----------
+    <bean class="com.cts.model.Point" id="start">
+    	<property name="xCoord" value="0"/>
+    	<property name="yCoord" value="5"/>
+    </bean>
+    
+    <bean class="com.cts.model.Line">
+    	<property name="p1" ref="start"/>    	
+    	<property name="p2">
+		<!--  inner bean -->
+    		<bean class="com.cts.model.Point">
+    			<property name="xCoord" value="5"/>
+    			<property name="yCoord" value="10"/>
+    		</bean>
+    	</property>    
+    </bean>
+
+- bean definition inheritance (it is not same as java inheritance)
+public class Account {
+	private Long accNum;
+	private String branchCode;
+	private String accHldrName;
+...
+}
+
+spring.xml
+----------
+<!--  parent bean -->
+<bean class="com.cts.model.Account" id="account"
+	abstract="true">
+	<property name="branchCode" value="SBI1515" />
+</bean>
+
+<bean id="user1" parent="account">
+	<property name="accNum" value="115566" />
+	<property name="accHldrName" value="Rajesh" />
+</bean>
+	
+<bean id="user2" parent="account">
+	<property name="accNum" value="115568" />
+	<property name="accHldrName" value="Raushan" />
+</bean>
+
+In the main() method, add the lines
+	Account account=ctx.getBean("user1",Account.class);
+		System.out.println(account.getBranchCode());
+		System.out.println(account.getAccHldrName());
+		System.out.println(account.getAccNum());
+
+Summarise:
+	inner bean
+	bean definition inheritance
+	reading a properties file
+	classpath component scanning
+	working with collections
+
+TBD
+----
+CRUD application using spring and jdbc-template	
+Create a new simple Maven project (skip archetype selection)
+Add the groupId (org.jf036) and artifactId (spring-core-jbdcdemo).
+Add the spring-context dependency in the pom.xml file
+
+Around 9 questions from spring-core are ready to be solved..
+
+
+

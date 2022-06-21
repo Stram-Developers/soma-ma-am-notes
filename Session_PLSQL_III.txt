@@ -1,0 +1,218 @@
+Explicit Cursor & Triggers
+
+IN OUT mode in a Stored Procedure
+
+create or replace procedure pcube(a IN OUT number)
+as
+begin
+	a:=a*a*a;
+end;
+/
+
+declare
+	x number(3):=8;
+begin
+	pcube(x);
+	dbms_output.put_line(x);
+end;
+/
+
+Cursor with parameters
+-----------------------
+
+declare
+	vfirst hr.employees.first_name%type;
+	vlast hr.employees.last_name%type;
+	nsalary hr.employees.salary%type;
+	
+	cursor c(eid hr.employees.employee_id%type)
+	is
+	select first_name,last_name,salary
+	from hr.employees
+	where employee_id=eid;
+
+begin
+    for i in 200..210 loop
+	open c(i);
+	fetch c into vfirst,vlast,nsalary;
+	if c%FOUND then
+	dbms_output.put_line('Emp with id '||i);
+	dbms_output.put_line(vfirst||' '||vlast||' '||nsalary);
+	else
+	dbms_output.put_line('No such emp with id '||i||' found');
+	end if;
+	
+	close c;
+	end loop;
+end;
+
+
+The %ROWTYPE attribute is used to define a record with fields corresponding to all of the columns that are fetched from a cursor or cursor variable. Each field assumes the data type of its corresponding column.
+
+declare    
+    cursor c(eid hr.employees.employee_id%type)
+	is
+	select *
+	from hr.employees
+	where employee_id=eid;
+	
+	emp_rec c%ROWTYPE;-- record
+
+begin
+    for i in 200..210 loop
+	open c(i);
+	fetch c into emp_rec;
+	if c%FOUND then
+	dbms_output.put_line('Emp with id '||i);
+	dbms_output.put_line(emp_rec.first_name||' '||emp_rec.hire_date||' '||emp_rec.salary);
+	else
+	dbms_output.put_line('No such emp with id '||i||' found');
+	end if;
+	
+	close c;
+	end loop;
+end;
+/
+
+Cursor For Loop | the OPEN,FETCH and CLOSE occurs implicitly.
+We only need to declare the cursor.
+
+declare    
+        cursor c(eid hr.employees.employee_id%type)
+	is
+	select *
+	from hr.employees
+	where employee_id=eid;
+begin
+
+	for emp_rec IN c(205) loop
+	dbms_output.put_line(emp_rec.first_name||' '||emp_rec.hire_date||' '||emp_rec.salary);
+		exit when c%NOTFOUND;
+	end loop;
+end;
+/
+
+PLSQL DML Triggers 
+Triggers are like procedures which are associated with some
+table or view and are invoked/called automatically when a DML
+operation is performed on that db object.
+
+I will create a copy of the hr.employees table.
+
+create table emp
+as
+select first_name,salary,hire_date,job_id
+from hr.employees
+where department_id in (10,20,30);
+
+-- statement level trigger
+create or replace trigger mytrigger
+before insert or update or delete on emp
+begin
+    dbms_output.put_line('I am called');
+end;
+/
+
+A statement level trigger is called only one for n rows updated. Even if no records are updated then also it will be
+triggered.
+
+-- row level trigger
+create or replace trigger mytrigger
+before insert or update or delete on emp
+for each row
+begin
+    dbms_output.put_line('I am called');
+end;
+/
+
+A row level trigger is called everytime a row is affected. If no records are affected then it will not be triggered.
+
+update emp
+set salary=salary+1000;
+
+Example for statement level trigger
+------------------------------------
+create table empaudit(
+name varchar(30),
+time date,
+type varchar(30));
+
+create or replace trigger mytrigger
+before insert or update or delete on emp
+declare
+	actionType varchar(30);
+begin
+  if inserting then
+	actionType:='INSERT';
+  elsif updating then
+	actionType:='UPDATE';
+  else
+	actionType:='DELETE';
+  end if;
+	insert into empaudit
+	values(user,current_timestamp,actionType);
+end;
+/
+
+insert into emp
+values('Naveen',25000,'27-JAN-2022','IT_MAN');
+
+update emp
+set salary=salary+1000
+where first_name like 'N%';
+
+select name,time,type from empaudit;
+
+Ex2:
+create or replace trigger mytrigger
+before delete on emp
+begin
+	raise_application_error('-20202','Operation Denied');
+end;
+/
+
+Example for row level trigger
+------------------------------------
+We get access to :new and :old qualifiers in row level trigger.
+
+create or replace trigger mytrigger1
+before insert on emp
+for each row
+begin
+	:new.first_name :=initcap(:new.first_name);
+	if :new.job_id not in ('IT_MAN','IT_EXE','IT_REP') then
+		raise_application_error('-20205','Invalid job Id');
+	end if;
+
+end;
+/
+
+insert into emp
+values('SURESH',15000,sysdate,'IT_MAN');
+
+select * from emp;
+
+Ex2:
+create table emphistory
+as
+select * from emp
+where 78=85;
+
+-- The above query will create a empty table with same structure as emp table
+
+create or replace trigger mytrigger
+after delete on emp
+for each row
+begin
+insert into emphistory values(:old.first_name,:old.salary,:old.hire_date,:old.job_id);
+end;
+/
+
+delete from emp
+where first_name in('Suresh','Naveen');
+
+select * from emphistory;
+
+
+
+

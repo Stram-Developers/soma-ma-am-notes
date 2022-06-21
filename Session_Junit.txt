@@ -1,0 +1,87 @@
+Stage 2
+----------
+Spring core concepts using Maven [12]
+JUnit testing & Mockito framework [7]
+Spring MVC using Spring Boot [8]
+
+Spring MVC Code Challenge [21-Mar-2022]
+Stage 2 ICT (Spring MVC using Spring Boot) [24-Mar-2022]
+
+JUnit testing
+What is unit testing? Why we will do it?
+We perform unit testing to test a smallest code block in isolation to figure out whether it is giving the proper output
+in all situations. The unit testing is done by the coder himself.
+
+Junit is the most popular testing framework for testing Java codes. There is another framework TestNG.
+We will test using Junit version 4.0
+
+We will require certain jar files for getting hold of JUnit.
+Eclipse IDE has inbuild support for JUnit.
+Create a new Java project..
+Right click your project >> Build Path >> Configure Build Path
+Select [[Libraries]] tab, click [Add Library] button
+Chose JUnit 4 and [Apply and Close]
+
+SUT(System Under Test),CUT(Class Under Test)
+Calculator
+PersonService
+
+The name of the test class is preferred to be:
+CalculatorTest
+PersonServiceTest
+
+Expected Output || Actual Output (If both are same or equal the test case passed else test case fails)
+
+@Test annotation | The Test annotation tells JUnit that the public void method to which it is attached can be run as a test case. 
+A public void method annotated with @Before or @After annotation
+will be called once before and after each test method starts and completes its execution respectively. 
+
+Sometimes several tests need to share computationally expensive setup(like logging into a database). While this can compromise the independence oftests, sometimes it is a necessary optimization. Annotating a public static void no-arg method with @BeforeClass or @AfterClass causes it to be run once before any of the test methods in the class and once after all the test methods in the class. 
+
+@Ignore annotation when placed with any @Test method will be ignored by the JUnit Runner class.
+
+How to run multiple test files together in one single go?
+import org.junit.runner.RunWith;
+import org.junit.runners.Suite;
+import org.junit.runners.Suite.SuiteClasses;
+@RunWith(Suite.class)
+@SuiteClasses({CalculatorTest.class,PersonServiceTest.class})
+public class MySuite {
+
+}
+
+Suite class|Using Suite as a runner allows you to manually build a suite containing tests from many classes. 
+
+How to test if an exception is being thrown by a method under test?
+@Test(expected=CustomException.class)	
+public void testThree() throws CustomException {				assertNull(service.fetch(111));		
+}
+
+How to create category in Junit?
+We will create some marker interfaces called Sample and Hidden
+
+Annotate the existing test methods in the test class
+as follows:
+import org.junit.experimental.categories.Category;
+	@Test
+	@Category({Sample.class,Hidden.class})
+	public void testValidateTwo() {		
+		assertTrue(calc.validateEmail("abc@cognizant.com"));
+	}
+
+@RunWith(Categories.class)
+@SuiteClasses({CalculatorTest.class})
+@IncludeCategory({Hidden.class})
+public class CatSuite {
+
+}
+
+TBD
+Mockito framework
+
+
+
+
+
+
+

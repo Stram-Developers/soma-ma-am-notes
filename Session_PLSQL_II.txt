@@ -1,0 +1,335 @@
+PLSQL Anonymous Block
+declare
+	vfirst hr.employees.first_name%type;
+	vlast hr.employees.last_name%type;
+begin
+	select first_name,last_name
+	into vfirst,vlast
+	from hr.employees
+	where employee_id=205;
+
+	dbms_output.put_line(vfirst||' '||vlast);
+end;
+/
+
+We can save the anonymous block as a database object persistently. Then it is known as named block.
+
+Named block can be two types
+a) Stored Procedure
+
+create or replace procedure empproc(empid number)
+as
+	vfirst hr.employees.first_name%type;
+	vlast hr.employees.last_name%type;
+begin
+	select first_name,last_name
+	into vfirst,vlast
+	from hr.employees
+	where employee_id=empid;
+
+	dbms_output.put_line(vfirst||' '||vlast);
+end;
+/
+
+The parameter passed is in IN mode.
+We can pass a value to the procedure when executing it.
+	exec empproc(202);
+
+A procedure can also be called from another anonymous block/named block.
+	begin
+		empproc(205);
+	end;
+	/
+
+There are two other modes of sending parameters to a procedure
+OUT mode (the procedure will return the value through this
+parameter)
+
+create or replace procedure empproc(empid IN number,fullname OUT varchar)
+as
+	vfirst hr.employees.first_name%type;
+	vlast hr.employees.last_name%type;
+begin
+	select first_name,last_name
+	into vfirst,vlast
+	from hr.employees
+	where employee_id=empid;
+
+	fullname:=(vfirst||' '||vlast);
+end;
+/
+
+declare
+	name varchar(200);
+begin 
+	empproc(202,name);
+	dbms_output.put_line('Name '||name);
+end;
+
+The third mode is IN OUT mode which means the same window is used for sending data in and receiving data out.
+The data type of incoming and outgoing mode is same.
+
+create or replace procedure empproc(empid_sal IN OUT number)
+as
+begin
+	select salary into empid_sal
+	from hr.employees
+	where employee_id=empid_sal;
+end;
+
+declare
+	empid_sal number(10,2):=205;
+begin
+	empproc(empid_sal);
+	dbms_output.put_line(empid_Sal);
+end;
+/
+
+The parameter is an input-only parameter (IN), an output-only parameter (OUT), or is both an input and an output parameter (IN OUT). If the mode is not specified, then IN is assumed.
+FYR: https://docs.oracle.com/cd/B14117_01/appdev.101/b10795/adfns_pc.htm
+
+b) Function is also an example of Named Block.
+Unlike procedure, function always returns a value.
+Procedure may or may not have an OUT parameter.
+
+We can call a function from SELECT query but we cannot call a procedure from a SELECT query.
+
+Function generally only has IN parameters.
+
+create or replace function emailcreate(firstName varchar, lastName varchar) return varchar
+as
+ email varchar(100);
+begin
+	email:=firstName||'.'||lastName||'@cognizant.com';
+	return email;
+end;
+/
+
+select emailcreate('Virat','Kohli') from dual;
+
+select first_name,last_name,emailcreate(first_name,last_name) email 
+from hr.employees;
+
+Exception Handling
+------------------
+Exception is an abnormal situation which disrupts the normal
+flow of the program...
+Exception handling implies making the abrupt termination proper.
+
+
+create or replace procedure empproc(empid number)
+as
+	vfirst hr.employees.first_name%type;
+	vlast hr.employees.last_name%type;
+begin
+	select first_name,last_name
+	into vfirst,vlast
+	from hr.employees
+	where employee_id=empid;
+
+	dbms_output.put_line(vfirst||' '||vlast);
+
+exception 
+	when no_data_found then
+	dbms_output.put_line('No such emp record found');
+	when others then
+	dbms_output.put_line('Something went wrong');
+end;
+/
+
+exec empproc(105);
+exec empproc(222);
+
+OTHERS handler must be last among the exception handlers of a block 
+
+Ex 2:
+declare
+a number(3):=45;--999
+b number(3):=0;
+res number(3);
+begin
+    a:=5065;
+    res:=a/b;
+    dbms_output.put_line('Res= '||res);
+exception
+    when zero_divide then
+        dbms_output.put_line('Denom is zero');
+    when others then
+        dbms_output.put_line(substr(SQLERRM,43));
+end;
+/
+
+The function SQLERRM returns the error message associated with its error-number argument.
+
+Custom Exception
+------------------
+declare
+a number(3):=45;--999
+b number(3):=-8;
+NEG_EX exception;
+res number(3);
+begin
+    a:=506;
+	if a<0 or b<0 then
+		raise NEG_EX;
+	end if;
+    res:=a/b;
+    dbms_output.put_line('Res= '||res);
+exception
+    when zero_divide then
+        dbms_output.put_line('Denom is zero');
+    when NEG_EX then
+        dbms_output.put_line('Either numer or denom is -ve');
+    when others then
+        dbms_output.put_line(substr(SQLERRM,43));
+end;
+/
+
+Please note that SQLERRM is only applicable for predefined exceptions in Oracle and not for custom exceptions.
+
+Package
+------------
+PLSQL allows to create a package to store multiple procedures
+and functions as a single unit.
+dbms_output
+
+Every plsql package has two sections:
+a) package specification
+b) package body
+
+package specification CAN EXIST WITHOUT package body.
+package body CANNOT EXIST with package specification.
+
+All the declarations in the package specification are PUBLIC in nature. You can make PRIVATE declarations within the package body.
+
+Example of package specification
+create or replace package calc
+as
+ function plus(a number, b number) return number;
+ function substract(a number, b number) return number;
+end calc;
+/
+
+create or replace package body calc
+as
+ function plus(a number, b number) return number
+	as
+	begin
+		return a+b;
+	end; 
+ function substract(a number, b number) return number
+	as
+	begin
+		if a>=b then	
+			return a-b;
+		else
+			return b-a;
+		end if;
+	end;
+end calc;
+/
+
+To call such units use package name first..
+	select calc.substract(5,6) from dual;
+	select calc.plus(20,5) from dual;
+
+To drop a procedure
+drop procedure empproc;
+
+To drop a function
+drop function emailcreate;
+
+To drop a package (body+specification)
+drop package calc;
+
+To drop a package body
+drop package body calc;
+
+Explicit Cursor
+-------------------
+
+create or replace procedure empproc(depid number)
+as
+	vfirst hr.employees.first_name%type;
+	vlast hr.employees.last_name%type;
+begin
+	select first_name,last_name
+	into vfirst,vlast
+	from hr.employees
+	where department_id=depid;
+
+	dbms_output.put_line(vfirst||' '||vlast);
+end;
+/
+
+Implicit cursor you have only the space to store one and only one record at a time. If the query returns more than one row
+you get an exception telling you too_many_rows fetched.
+Solution: Use of explicit cursor
+
+create or replace procedure empproc(depid number)
+as
+	vfirst hr.employees.first_name%type;
+	vlast hr.employees.last_name%type;
+	cursor c is
+	select first_name,last_name
+	from hr.employees
+	where department_id=depid;
+begin
+	open c;
+	fetch c into vfirst,vlast;
+
+	loop
+		dbms_output.put_line(vfirst||' '||vlast);
+		fetch c into vfirst,vlast;
+		exit when c%NOTFOUND;	
+	end loop;
+	
+	close c;
+end;
+/
+
+exec empproc(10);
+exec empproc(20);
+exec empproc(30);
+
+Explicit cursor
+a)We declare the cursor in the declaration section
+	cursor cur_name
+	is
+	select query
+b) We open the cursor : the memory allocation for the cursor happens, the query is executed to get the records.
+	open cur_name;
+A cursor once opened cannot be reopened. If tried we gets
+	CURSOR_ALREADY_OPEN exception.
+c) We fetch the records one by one : The cursor indicator
+moves from first row to send, second to third with each call
+to fetch..
+	fetch cur_name into var1,..,varN
+I can only fetch provided the cursor is open.
+	INVALID_CURSOR exception.
+d) We should close the cursor to deallocate the memory in use.
+	close cur_name;
+
+
+
+1st Feb: Explicit Cursor & Triggers
+	Cursor For Loop
+	Cursor with parameters
+2nd Feb: Unix basic commands
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

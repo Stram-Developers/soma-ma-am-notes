@@ -1,0 +1,201 @@
+[12(Spring core)+7(junit)=19 hands-on by this Saturday]
+
+Aspect Oriented Programming
+
+Trutime is a "cross cutting concern"
+In an application, we have logging, authentication as cross cutting concerns.
+
+ATM counter,
+a) Change PIN
+b) Withdraw
+c) Deposit
+...
+Validate PIN is another example of cross cutting concern
+
+Spring core + Spring aop 
+spring-context
+The other dependencies requires are:
+<dependency>				<groupId>org.springframework</groupId>
+	<artifactId>spring-aop</artifactId>
+	<version>5.2.5.RELEASE</version>
+</dependency>
+<dependency>
+	<groupId>org.aspectj</groupId>					<artifactId>aspectjweaver</artifactId>
+	<version>1.8.9</version>
+</dependency>
+<dependency>					<groupId>org.aspectj</groupId>
+	<artifactId>aspectjrt</artifactId>
+	<version>1.8.9</version>
+</dependency>
+
+AOP terminology
+Aspect | It is a class annotated with @Aspect annotation.
+This aspect will contain the cross cutting concern related coding.
+
+The key unit of modularity in OOP is the class, whereas in AOP the unit of modularity is the aspect.
+
+In the AppConfig class where you have already @Configuration
+annotation present, also add the annotation @EnableAspectJAutoProxy
+Enables support for handling components marked with AspectJ's @Aspect annotation, similar to functionality found in Spring's <aop:aspectj-autoproxy> XML element. To be used on @Configuration classes
+
+The class with @Aspect annotation on top of it can generate
+different types of advices like @Before advice, @After,
+@AfterReturning, @AfterThrowing, @Around.
+
+Advice is nothing but a method which will get executed at a particular join point.
+
+The join point is also a method(s) on execution of which the advices are supposed to trigger and execute.
+
+Example of advice (before)
+@Before
+public boolean validatePin(){
+	//code here
+}
+
+Example of advice (after)
+@After
+public String notifyUserThruSMS(){
+	//code here
+}
+
+Example of join point(s)
+public void withdraw(){}
+public void deposit(){}
+public void changePin(){}
+
+Let us explore through an example
+package com.cts.model;
+public class Person {	
+	private String name;
+	private int age;
+//getter, setters, constructors
+
+public boolean showDetails(){
+System.out.println(getName()+ " is now "					+getAge()+" years old.");
+	if(age>=60) {
+			//return true;
+		throw new ArithmeticException();
+	}
+		
+		return false;
+}
+}	
+
+package com.cts;
+@Aspect
+public class MyAspect {
+	
+@Pointcut("execution(* com.cts.model.Person.show* (..))"
+	public void k(){}
+
+@Before("k()")
+	public void beforeAdvice() {
+	System.out.println("before advice being called...");
+	}
+
+@After("k()")
+	public void afterAdvice() {
+	System.out.println("after advice being called...");
+	}
+
+@AfterReturning("k()")
+	public void afterAdvice2() {
+		System.out.println("After normal execution...");
+	}
+	
+	@AfterThrowing("k()")
+	public void afterAdvice3() {
+		System.out.println("After abnormal execution...");
+	}
+
+}
+
+
+package com.cts;
+@Configuration
+@EnableAspectJAutoProxy
+@ComponentScan(basePackages = "com")
+public class AppConfig {
+	
+	@Bean
+	public Person one(){
+		Person p=new Person();
+		p.setName("Meghna");
+		p.setAge(16);//61
+		return p;
+	}
+	
+	@Bean
+	public MyAspect aspectBean(){
+		return new MyAspect();
+	}
+}
+
+package com.cts;
+public class Main{
+public static void main(String[] args) {
+		//annotation based
+AnnotationConfifApplicationContext ctx = new AnnotationConfigApplicationContext(AppConfig.class);	
+
+Person per=ctx.getBean("one",Person.class);
+//per.showDetails();
+		try {
+			per.showDetails();
+		}catch(Exception e) {}
+}		
+
+}
+
+Sample Output
+---------------------
+before advice being called...
+Meghna is now 16 years old.
+after advice being called...
+
+"execution(* com.cts.model.Person.show* (..))"
+The above syntax is known pointcut; a predicate that matches join points.
+
+Look for methods that start with 
+showDetails(String x)
+showDetails(Integer x, String y)
+
+The primary Spring PCD (pointcut designator) is execution, which matches method execution join points.
+
+@Pointcut("execution(* com.baeldung.pointcutadvice.dao.FooDao.*(..))")
+
+Here the first wildcard matches any return value, the second matches any method name, and the (..) pattern matches any number of parameters (zero or more).
+
+@After advice will execute for all possibilities of the
+join point.
+
+Output (when age is 16)
+@AfterReturning advice will execute only when join point follows normal execution
+---------------------------
+before advice being called...
+Meghna is now 16 years old.
+after advice being called...
+After normal execution...
+
+Output (when age is 61)
+@AfterThrowing advice will execute only when join point throws an exception
+---------------------------
+before advice being called...
+Meghna is now 61 years old.
+after advice being called...
+After abnormal execution...
+
+Summarise:
+@Aspect
+@EnableAspectJAutoProxy
+@Before, @After, ...
+@Pointcut
+
+We will download and link tomcat server with our Eclipse IDE
+Servlet and JSP based web application which we will create in next 2 sessions. Apache Tomcat server 9.0.42
+
+
+
+
+
+
+

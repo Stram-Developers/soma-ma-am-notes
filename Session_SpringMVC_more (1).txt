@@ -1,0 +1,290 @@
+I18N,Exception Handling
+Model, ModelMap, ModelAndView
+@ModelAttribute
+
+19th: We will practice a case study on Spring MVC 
+
+Please ensure that the handson are evaluated by 19th March to get the invitation for CC on 21st March.
+
+Create a simple maven project (skip archetype selection)
+groupId org.jf036
+artifactId spring-mvc-demo3
+
+Add the following dependencies in the pom.xml
+<parent> spring-boot-starter-parent
+<dependencies>
+	spring-boot-starter-web
+	spring-boot-devtools
+	jstl
+	tomcat-embed-jasper
+
+Add the application.properties file in the src/main/resources folder
+Fill it up
+
+Create the source folder src/main/webapp with folder
+WEB-INF/views under it.
+
+In the src/main/java source folder
+create the packages
+com
+com.model
+com.controller
+com.exception
+com.service
+
+How to manage i18n in your Spring Application?
+We need to add messages.properties (default locale) file in the src/main/resources source folder.
+
+We will further add messages_XX.properties file corresponding to each locale.
+For eg. messages-de.properties
+
+German locale code= de, de-DE
+French locale code= fr
+English locale code= en-US, en-IN
+
+Each properties file will contain multiple key=value pairs.
+
+We will add the class AppConfig annotated with @Configuration annotation in the com package.
+This class will have two or more @Bean methods
+
+@Configuration
+public class AppConfig implements WebMvcConfigurer {
+
+@Bean
+public LocalValidatorFactoryBean validator(MessageSource messageSource) {
+	LocalValidatorFactoryBean bean = new LocalValidatorFactoryBean();
+	bean.setValidationMessageSource(messageSource);
+		return bean;
+}
+
+	@Bean
+	public MessageSource messageSource() {
+		ReloadableResourceBundleMessageSource messageSource = 
+	new ReloadableResourceBundleMessageSource();
+	messageSource.setBasename("classpath:messages");
+	messageSource.setDefaultEncoding("UTF-8");
+	return messageSource;
+}
+	
+	 @Bean
+	 public LocaleResolver localeResolver() {
+	    SessionLocaleResolver localeResolver = new SessionLocaleResolver();
+	    localeResolver.setDefaultLocale(Locale.US);
+	    return localeResolver;
+	 }
+
+	 @Bean
+	 public LocaleChangeInterceptor localeChangeInterceptor() {
+	    LocaleChangeInterceptor localeChangeInterceptor = new LocaleChangeInterceptor();
+	    localeChangeInterceptor.setParamName("lang");
+	    return localeChangeInterceptor;
+	 }
+
+	 @Override
+	 public void addInterceptors(InterceptorRegistry registry) {
+	   registry.addInterceptor(localeChangeInterceptor());
+	 }
+}
+ 
+http://localhost:9006/login?lang=en
+
+Why use WebMvcConfigurer interface?
+Interface WebMvcConfigurer. Defines callback methods to customize the Java-based configuration for Spring MVC enabled via @EnableWebMvc . @EnableWebMvc -annotated configuration classes may implement this interface to be called back and given a chance to customize the default configuration.
+
+Why use LocaleResolver?
+DispatcherServlet enables you to automatically resolve messages using the client's locale. This is done with LocaleResolver objects.
+When a request comes in, the DispatcherServlet looks for a locale resolver and if it finds one it tries to use it to set the locale.
+
+How shall I include them in our JSP pages?
+<%@taglib uri="https://www.springframework.org/tags" prefix="spring"%>
+<spring:message code="label.firstName" text="what-to-display-instead" />
+
+<!-- label.firstName  is the key mentioned in the messages.properties file -->
+
+Create a login.jsp and add the 3 taglib directives
+<%@ taglib prefix="sf" uri="http://www.springframework.org/tags/form"%>
+<%@ taglib prefix="s" uri="http://www.springframework.org/tags"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+
+<body>
+<a href="/login?lang=en">English</a> |
+<a href="/login?lang=de">German</a>
+
+<div style="text-align: center;">
+<h1>
+<s:message code="label.heading" text="Message" />
+</h1>
+
+<sf:form action="submitlogin" method="post" 				modelAttribute="login">
+
+<s:message code="label.username" text="User Name" />: <sf:input path="userName" />
+<sf:errors path="userName" cssStyle='color:red' />
+<br />
+
+<s:message code="label.password" text="Password" />: <sf:input type="password" path="password" />
+<sf:errors path="password" cssStyle='color:red' />
+<br />
+
+<s:message code="label.role" text="Role"/>:
+<sf:select path="role">
+	<sf:option value="" label="--- Select ---"/>
+	<sf:options items="${roles}" />
+</sf:select>
+<sf:errors path="role" cssStyle='color:red' />
+<br/>
+
+<input type="submit" value="Login" />
+<input type="reset" value="Cancel" />
+
+</sf:form>
+</div>
+
+</body>
+
+Create the class LoginBean in the com.bean package
+import javax.validation.constraints.*;
+public class LoginBean {
+	@NotEmpty(message="{name.not.empty}")
+	@Size(min=4,max=10,message="{name.size.incorrect}")
+	private String userName;
+	
+	@NotEmpty(message="Password is mandatory")
+	private String password;
+	
+	@NotEmpty(message="Select a role")
+	private String role;	
+...
+}
+
+Create the class LoginController in the com.controller package. Annotate with @Controller annotation
+
+@Controller
+public class LoginController {
+	@Autowired
+	private LoginService service;
+
+	@ModelAttribute("roles")
+	public List<String> showAllRoles() {
+		List<String> list = new ArrayList<String>();
+		list.add("Member");
+		list.add("Guest");
+		list.add("Admin");
+
+		return list;
+	}
+
+	@RequestMapping(value = "/login", method = RequestMethod.GET)
+	public String showLoginpage(@ModelAttribute("login") LoginBean loginBean) {
+		return "login";
+	}
+
+	@RequestMapping(value = "/submitlogin", method = RequestMethod.POST)
+	public String checkLoginDetails(@Valid @ModelAttribute("login") LoginBean loginBean, BindingResult result,	Model model) throws InvalidUserException {
+		if (result.hasErrors()) {
+			return "login";
+		}
+		if (service.validate(loginBean)) {
+			return "success";
+		}
+	model.addAttribute("message", "Access denied");
+		return "invalid";
+	}
+}
+FYR: https://www.javadevjournal.com/spring-mvc/spring-mvc-model-attribute-annotation/
+Spring MVC makes a call to showAllRoles() method(annotated with @ModelAttribute)before the controller methods annotated with @RequestMapping are invoked. This sequence ensures that the model object is available before request processing starts in the Spring controller.
+
+Create the class LoginService (annoated with @Service annotation) in the com.service package
+
+@Service
+public class LoginService {
+	private List<String> names;
+	
+	public LoginService(){
+		names=new ArrayList<>();
+		names.add("Sanjay");
+		names.add("Parth");
+		names.add("Himani");
+		names.add("Kajol");		
+	}
+	public boolean validate(LoginBean bean) throws InvalidUserException	{
+		if(bean.getUserName().equalsIgnoreCase(bean.getPassword())) {
+		if(names.contains(bean.getUserName()))
+			return true;
+		else
+	throw new InvalidUserException("Not a valid user");
+		}
+		return false;
+	}	
+}
+
+Post this add two new jsp pages: invalid.jsp and success.jsp
+Add the 3 taglib directives on top
+
+success.jsp
+-------------
+<div style="text-align: center;">
+<h1>
+	<s:message code="label.heading" text="Message" />
+</h1>
+<h2>Login Successful !!! Welcome ${login.userName}</h2>
+		<br /> <a href="/login"> &lt;&lt;</a>
+</div>
+
+invalid.jsp
+------------
+<div style="text-align: center;">
+		<h2>${message}</h2>
+</div>
+
+We will now just add a class with @ControllerAdvice annotation which can contain multiple @ExceptionHandler methods..
+
+@ControllerAdvice
+public class GlobalControllerExceptionHandler {
+
+@ExceptionHandler(com.exception.InvalidUserException.class)
+public String showCustomErrorPage(Model model,Exception ex) {
+	model.addAttribute("message",ex.getMessage());
+	return "invalid";
+} 	
+
+}
+
+Test Cases
+1. i18n
+2. validations
+3. username and password same; not in list
+"Not a valid user"
+4. username and password not same; "Access Denied"
+5. username and password same; also in list
+"Welcome <<username>>
+
+Model, ModelMap, ModelAndView
+Both Model and ModelMap are interfaces to hold the attributes
+model.addAttribute("key",value);
+
+the model can supply attributes used for rendering views (all the JSP pages).
+
+org.springframework.ui.Model, org.springframework.ui.ModelMap and org.springframework.web.servlet.ModelAndView provided by Spring MVC.
+ModelAndView allows us to pass all the information required by Spring MVC in one return.
+
+FYR: https://www.baeldung.com/spring-mvc-model-model-map-model-view
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

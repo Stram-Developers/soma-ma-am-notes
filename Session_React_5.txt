@@ -1,0 +1,208 @@
+React Forms
+
+How to add bootstrap in the React application?
+Copy the CDN links from the below site:
+https://www.w3schools.com/bootstrap4/bootstrap_get_started.asp
+and paste the scripts appropriately in the <body> section
+just before closing </body> tag and the CSS link in the <head> section of the public/index.html page in your React Application
+
+FYR:
+https://blog.logrocket.com/how-to-use-bootstrap-with-react-a354715d1121/
+
+<div className="container">
+</div>
+className="" instead of class="" unlike HTML
+
+//UserForm.js
+import React, {Component} from 'react'
+export default class UserForm extends Component
+{
+    constructor(props) {
+        super(props)
+        this.state = {
+           id:1,name:'',complaint:''
+        }
+        this.handleForm=this.handleForm.bind(this);
+        this.handleChange=this.handleChange.bind(this);
+    }
+
+    handleChange(e){
+        this.setState({[e.target.name]:e.target.value});
+    }
+
+     render(){
+		return(<>
+        <table className="table table-bordered table-stripped table-dark"><tbody>
+            <tr>
+              <td>Name:</td>
+              <td>
+                <input type="text" name="name" onChange={this.handleChange}></input>
+              </td>
+            </tr>
+            <tr>
+              <td>Complaint/Query:</td>
+              <td>
+                <input type="text" name="complaint" onChange={this.handleChange}></input>
+              </td>
+            </tr>
+            <tr>
+              <td></td>
+              <td>
+                <button onClick={this.handleForm}>Submit</button>
+              </td>
+            </tr>
+            </tbody></table></>);
+   }
+
+handleForm(e)
+    {
+     if(this.state.name!=='' && this.state.complaint!==''){
+            this.setState(prevState=>({
+                        id:prevState.id+1
+             }));
+            alert(`Thanks!! ${this.state.name}\r\nYour Complaint was Submitted \r\nTransaction ID is ${this.state.id}`);
+        }else{
+                 alert('Fields missing');
+        } 
+        e.preventDefault();
+    }
+
+}
+
+//RegisterComp.js
+import React, {Component} from 'react'
+const validEmailRegex = new RegExp('[a-z0-9]+@[a-z]+.[a-z]{2,3}');
+
+const validateForm = errors => {
+    let valid = true;
+        Object.values(errors)
+	.forEach(val => val.length > 0 && (valid = false));             
+        return valid;
+};
+
+export default class RegisterComp extends Component
+{
+	constructor(props) {
+       	 super(props);
+        this.state = {
+            fullName: null,
+            email: null,
+            password: null,
+            errors: {
+              fullName: '',
+              email: '',
+              password: ''
+            },
+            go:false            
+        }
+        this.handleChange=this.handleChange.bind(this);
+        this.handleSubmit=this.handleSubmit.bind(this);
+    }
+
+   handleChange(event){
+        event.preventDefault();
+	//object destructuring ES6
+        const { name, value } = event.target;
+        let errors = this.state.errors;
+
+        switch (name) {
+            case 'fullName': 
+              errors.fullName = 
+                value.length < 5
+                  ? 'Full Name must be at least 5 characters long!'
+                  : '';
+              break;
+            case 'email': 
+              errors.email = 
+                validEmailRegex.test(value)
+                  ? ''
+                  : 'Email is not valid!';
+              break;
+              case 'password': 
+              errors.password = 
+                value.length < 8
+                  ? 'Password must be at least 8 characters long!'
+                  : '';
+              break;
+            default:
+              break;
+          }
+      
+        this.setState({errors, [name]: value});       
+    }
+
+	render(){
+	const {errors} = this.state;
+        return(<>
+        <form noValidate><table><tbody>
+            <tr>
+              <td>Name:</td>
+              <td>
+                <input type="text" name="fullName" onChange={this.handleChange} noValidate />
+              </td>
+            <td>{errors.fullName.length > 0 && 
+                <span className='error'>{errors.fullName}</span>}
+              </td>
+            </tr>
+            <tr>
+              <td>Email:</td>
+              <td>
+                <input type="email" name="email"onChange={this.handleChange} noValidate />
+              </td>
+              <td> {errors.email.length > 0 && 
+                <span className='error'>{errors.email}</span>}
+              </td>
+            </tr>
+            <tr>
+              <td>Password:</td>
+              <td>
+                <input type="password" name="password"onChange={this.handleChange} noValidate />
+              </td>
+              <td>{errors.password.length > 0 && 
+                <span className='error'>{errors.password}</span>}
+              </td>
+            </tr>
+            <tr>
+              <td></td>
+              <td>
+                <button onClick={this.handleSubmit}>Register</button>
+              </td>
+            </tr>
+            </tbody>
+          </table>
+          </form>
+          </>);
+	
+	}
+
+ handleSubmit(event){
+        event.preventDefault();
+        if(this.state.fullName !== null && this.state.email !== null && this.state.password !== null){
+            this.setState({go:true})
+        }
+        if(validateForm(this.state.errors) && this.state.go===true) {
+          console.info('Valid Form')
+          alert('Form submitted');
+        }else{
+          console.error('Invalid Form')
+          alert('Form Incomplete');
+        }
+    }
+	
+}
+
+
+handleChange(e){
+	e.preventDefault();
+	//more code
+}
+Why do we write e.preventDefault();
+FYR: https://reactjs.org/docs/handling-events.html
+
+Why write "novalidate"?
+The novalidate attribute is a boolean attribute. When present, it specifies that the form-data (input) should not be validated when submitted.
+
+FYR: https://www.educative.io/edpresso/react-form-validation
+
+
+

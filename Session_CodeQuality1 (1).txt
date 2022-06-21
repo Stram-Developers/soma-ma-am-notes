@@ -1,0 +1,177 @@
+Stage 2 ICT (Spring MVC using Spring Boot)
+24th March 2022
+
+Stage 3 curriculum
+-------------------
+Code Quality [3 handsOn] [We have complete to enable Stage 2 ICT]
+Spring Data JPA [3 handsOn]
+	KBA [30-45 mins - 20 questions][3/30/2022]
+React [13~15 handson]
+	KBA [4/8/2022]
+
+Code Quality
+a) Explore Lombok
+b) Explore Logging
+
+class Trainee{
+	private String name;
+	private int age;
+}
+You have to manually write/add several boiler plate coding
+which increases the lines of code.
+
+Lombok jar when added and configured in your project will allow to not write /add this boiler plate coding explicitly.
+The Lombok annotations will take care of it thereby reducing the number of lines of code...
+
+Create a simple maven project with skip archetype selection.
+Give groupid and artifactid accordingly.
+Open the pom.xml file and add the lobok dependency as given below:
+<dependencies>
+	<dependency>
+		<groupId>org.projectlombok</groupId>
+		<artifactId>lombok</artifactId>
+		<version>1.18.22</version>
+		<scope>provided</scope>
+	</dependency>
+</dependencies>
+
+Move to your .m2/respository/org/projectlombok/lombok/1.18.22
+Issue the command
+java -jar lombok-1.18.22.jar
+Add the lombok to your respective Eclipse IDE
+DO RESTART YOUR ECLIPSE IDE
+
+package com.cts;
+import lombok.*;
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+public class Trainee{
+	private String name;
+	private int age;
+}
+
+package com.cts;
+public class Main{
+	psvm(..){
+		Trainee t=new Trainee("Kajol",20);
+		Syso(t);//toString()
+	}
+}
+
+Project Lombok is a java library that automatically plugs into your editor and build tools, spicing up your java.
+Never write another getter or equals method again, with one annotation your class has a fully featured builder, Automate your logging variables, and much more.
+FYR: https://projectlombok.org/
+
+Window>> ShowView>> Outline
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+
+Logging implies to note down all the activities that happened during the execution of an application.
+For logging we have several utilities or tools avaialble.
+Log4j, java.util.Logging, Logback.
+
+Log4j is a simple and flexible logging framework.
+a) Add the dependency in the pom.xml
+ 	<dependency>
+		<groupId>log4j</groupId>
+		<artifactId>log4j</artifactId>
+		<version>1.2.17</version>
+	</dependency> 
+b) Add the log4j.properties file with necessary instructions in the src/main/resources folder
+[log4j.xml or log4j.properties]
+#console window
+log4j.rootLogger=INFO, stdout
+log4j.appender.stdout=org.apache.log4j.ConsoleAppender
+log4j.appender.stdout.layout=org.apache.log4j.PatternLayout
+log4j.appender.stdout.layout.ConversionPattern=%d{yy-MM-dd HH:mm:ss:SSS} %5p %t %c{2}:%L - %m%n
+
+#file
+log4j.rootLogger=INFO,File
+log4j.appender.File=org.apache.log4j.RollingFileAppender
+log4j.appender.File.File=log/logfile.log
+log4j.appender.File.layout=org.apache.log4j.PatternLayout
+log4j.appender.File.layout.ConversionPattern=%d{yy-MM-dd HH:mm:ss:SSS} %5p %t %c{2}:%L - %m%n
+
+
+c) Add the following line in each class where you want to use the Logger reference:
+	Logger logger=Logger.getLogger(<<ClassName.class>>);
+
+d) Log4j has 6 levels of logging
+ALL TRACE DEBUG INFO WARN ERROR FATAL OFF
+INFO (It will log all events >=INFO)
+	INFO WARN ERROR FATAL
+
+What is SLF4J?
+Simple Logging Facade 4 Java
+It is not a logging framework.It provides a simple abstraction of all the logging frameworks in Java. 
+As a coder I will use SLF4J, in the back end there can be any of the logging frameworks.
+
+App     SLF4J   | Log4j
+	SLF4J |java.util.Logging
+	SLF4J | Logback
+It decouples the application and the logging framework.
+
+How to involve SLF4J in your application?
+Add the slf4j dependency for your project with either log4j, logback, etc...
+
+	<dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-log4j12</artifactId>
+            <version>1.8.0-alpha2</version>
+        </dependency>
+
+https://developpaper.com/use-of-slf4j-and-logback-in-maven-project/
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+public class MainApp {
+	private static Logger 	logger=LoggerFactory.getLogger(MainApp.class);
+...
+}
+ 	<dependency>
+    		<groupId>ch.qos.logback</groupId>
+    		<artifactId>logback-classic</artifactId>
+    		<version>1.2.3</version>
+	</dependency>
+
+Add the logback.xml file in the src/main/resources folder
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <Pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</Pattern>
+        </encoder>
+    </appender>
+
+    <appender name="FILE" class="ch.qos.logback.core.FileAppender">
+        <file>log/app.log</file>
+        <append>true</append>
+        <immediateFlush>true</immediateFlush>
+        <encoder>
+            <Pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</Pattern>
+        </encoder>
+    </appender>
+
+    <logger name="com.cts" level="INFO"/>
+
+    <root level="debug">
+        <appender-ref ref="STDOUT"/>
+	<appender-ref ref="FILE"/>
+    </root>
+</configuration>
+
+
+
+
+
+
+
+
+
+
+
+

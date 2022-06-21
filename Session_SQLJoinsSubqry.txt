@@ -1,0 +1,380 @@
+ANSI SQL Joins
+Subquery
+
+Additional Practice paper try out on or before 4th Feb
+to revise SQL A-Z.
+
+Joins are a way of writing queries to fetch columns from
+more than one table who are related through a pk-fk relationship or a unq-fk relationship.
+
+There are 4 main categories of join
+a) inner join
+b) outer join (left outer, right outer , full outer)
+c) self join (a table is joined to itself)
+d) cross join (cartesian product)
+
+There are two styles of writing join
+a) ANSI SQL style (Industry preferred)
+	select col1,col2,coln
+	from tb1 JOIN tb2
+	ON tb1.col2=tb2.col1
+	JOIN tb3
+	ON tb3.col1=tb2.col1;
+
+b) Theta style
+	select col1,col2,coln
+	from tb1,tb2,tb3
+	WHERE tb1.col2=tb2.col1
+	AND tb3.col1=tb2.col2;
+
+If there are N tables to be joined, we need N-1 join conditions.
+
+If the SELECT clause has a column which is present in 
+more than one table then preceeding the column name with the table name is MUST.
+
+-- emp working in which dept name
+-- ansi sql style
+select ename,dname
+from emp join dept
+on emp.deptno=dept.deptno;
+
+-- theta style
+select ename,dname
+from emp,dept
+where emp.deptno=dept.deptno;
+
+-- perform join using the "using" clause
+-- when the same name column is present in both the tables
+select ename,dname,deptno
+from emp join dept
+using (deptno);
+
+-- we must mention the table name along with column name
+-- for an ambiguous column
+select ename,dname,emp.deptno
+from emp join dept
+on emp.deptno=dept.deptno;
+
+-- freedom given db engine to perform join
+select ename,dname,emp.deptno
+from emp natural join dept
+
+The above examples were of inner join type.
+What happens in an inner join?
+When we perform such a join only the matched records are
+fetched from both the tables.
+
+"The operations dept is not present in the above query as
+no emp is working the operations dept yet."
+
+What if I want to include operations dept in the result set
+fetched along with the other records?
+
+We should go for a outer join.We fetch matching records from
+both the tables plus unmatched records from one of the tables.
+
+select ename,dname
+from emp right outer join dept
+on emp.deptno=dept.deptno;
+
+select ename,dname
+from dept left outer join right
+on emp.deptno=dept.deptno;
+
+Using right or left is just a choice based on position of the table which can contain additional values.
+
+There can be a dept with no emp. So a dept can have additional
+values.
+
+We get to see an additional record where ename is null for operations.
+
+Scenario 1:
+associate
+------------
+associate_id
+associate_name
+joining_location (FK)
+
+location
+------------
+location_id (PK)
+location_address
+
+Cognizant has recently bought a new campus in XYZ Tech Park,Block GF,Gurugram (ITP_G1)
+
+ITP_A1 Mayanta Tech Park,Bangalore
+ITP_A2 Unitech Infospace,Kolkata
+ITP_A3 Infinity Park,Pune
+ITP_G1 XYZ Tech Park,Block GF,Gurugram
+
+210122 Samuel ITP_A1
+210223 Jeeten ITP_A2
+
+No one is reporting to ITP_G1
+
+WAQ to display the associate name and their joining location.
+Also include those locations where no one is reporting as of now. Display null for associate name in that case.
+
+select associate_name,joining_location
+from associate right join location
+on associate.joining_location=location.location_id;
+
+Scenario 2:
+Consider there is LMS
+You have member
+member_id [PK]
+member_name
+registration_date
+
+You have books
+book_id [PK]
+book_title
+edition
+
+You also have book_issue
+issue_date
+member_id [FK]
+book_id [FK]
+reference_no [PK]
+
+WAQ to display the issue date, member name, book title
+of all the books issued. Also include those member names
+who have never issued any book. Display null for issue date
+and book title column in such case.
+
+-- correct --
+select i.issue_date, m.member_name,b.book_title
+from book_issue i inner join books b 
+on i.book_id=b.book_id
+right join member m 
+on m.member_id=i.member_id;
+
+Self Join | A table is joined to itself.
+A table alias is MUST in self join
+
+WAQ to display emp name and his mgr's name.
+select concat(a.ename,' works under ',b.ename) info
+from emp b join emp a
+on b.empno=a.mgr;
+
+Scenario 1:
+Consider a bus_schedule
+schedule_id
+bus_id
+from_loc
+to_loc
+dep_dt
+
+WAQ to find the buses having the same source and destination
+travelling on date '30-01-2022'.
+
+Select b.bus_id 
+from bus_schedule b join bus_schedule a 
+on b.from_loc = a.from_loc 
+and b.to_loc = a.to_loc
+and b.bus_id <> a.bus_id
+where b.dep_dt = '30-01-2022';
+
+Scenario 2:
+Consider a cohorts table (related to courses and student)
+cohort_code
+coach
+domain
+strength
+start_date
+
+cohort_Code coach domain strength start_date
+===============================================
+ADM21JF036 Shivam Java FSE  26	 18-01-2022
+ADM21DN021 Shruti DN FSE    26	 20-0-2022
+ADM21JF037 Shruti Java FSE  26	 18-01-2022
+ADM21DN037 Shivam DN FSE    26	 18-01-2022
+
+WAQ to find the cohort code and coach name
+which started on the same date with same strength
+
+select c.Cohot_code, c.coach 
+from cohorts c join cohorts c1
+on c.start_date=c1.start_date 
+and c.strength=c1.strength
+and c.cohort_code != c1.cohort_code;
+
+Cross Join If there are m rows in one table and n rows in another table, cross join returns m*n rows.
+All possible combinations...
+Cartesian Product
+
+CREATE TABLE `maindish` (
+  `name` varchar(30) DEFAULT NULL,
+  `price` int DEFAULT NULL
+);
+
+CREATE TABLE `sidedish` (
+  `name` varchar(30) DEFAULT NULL,
+  `price` int DEFAULT NULL
+);
+
+select m.name, s.name,m.price+s.price combo
+from maindish m cross join sidedish s;
+
+SubQuery= A query nested with another query
+Can be simple or correlated.
+
+In a simple sub query the inner query is independent of the
+outer query. The outer query depends on the inner query.
+
+In correlated sub query both the inner and outer query mutually depend on each other.
+
+WAQ to find who earns more than the emp named 'CLARK'.
+select ename,sal
+from emp
+where sal > (
+	select sal from emp
+	where ename='CLARK'
+);
+
+The inner query evaluates first and the result of inner query 
+is the input for the outer query.
+
+WAQ to find who works in the same dept as the emp named 'CLARK'.
+
+select ename,deptno from emp
+where deptno IN(
+	select deptno from emp
+	where ename='CLARK'
+) and ename<>'CLARK';
+
+There can multiple emps with same name.
+Error: Subquery returns more than one row
+Solution: Use IN operator instead of = operator
+
+WAQ to find who have same job as 'CLARK'
+but work in different deptno from 'CLARK'.
+
+select ename,deptno,job from emp
+where deptno not in(
+	select deptno from emp
+	where ename='CLARK'
+) and job in(
+	select job from emp
+	where ename='CLARK'
+);
+
+WAQ to find which dept id has the maximum head count.
+
+-- mysql based approach
+-- will not be correct if multiple dept have same head count
+-- with highest value
+select count(deptno) count
+from emp
+group by deptno
+order by count desc
+limit 1;
+
+select count(deptno) count
+from emp
+group by deptno
+having max(count(deptno));
+-- Error Code: 1111. Invalid use of group function
+
+-- here comes the super hero "sub query"
+select deptno,count(deptno) count
+from emp
+group by deptno
+having count(deptno)>= ALL (
+	select count(deptno) count
+	from emp
+	group by deptno
+);
+
+>ALL means same as MAXIMUM
+<ALL means same as MINIMUM
+
+Practice Time
+1.WAQ to find the name of the emp(s) with longest name.
+select ename from emp
+where length(ename)=(
+	select max(length(ename)) from emp
+);
+
+2.WAQ to find the name of the emp(s) who earns second
+lowest salary in the company.
+select ename
+from emp 
+where sal in(
+select max(sal) from emp
+where sal != (select max(sal) from emp));
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

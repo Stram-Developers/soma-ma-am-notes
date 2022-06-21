@@ -1,0 +1,264 @@
+ES6 (ECMASCript 2015)| ES6 stands for ECMAScript 6. ECMAScript was created to standardize JavaScript, and ES6 is the 6th version of ECMAScript, it was published in 2015, and is also known as ECMAScript 2015.
+
+Things about JavaScript you should be comfortable with before learning React are: ES6 classes.
+
+The concepts we will explore in ES6 are
+a) let,const keyword
+b) default parameters
+c) destructuring
+d) map() method
+e) classes in ES6
+f) inheritance
+g) modules
+
+Prior to ES6, we could only define a variable in JS was using var keyword.
+The variable declared using var keyword is having function scope. The same name variable can be defined multiple times.
+
+//Ex of const keyword
+const abc=[1,2,3,6,4];
+console.log(abc);
+abc[2]=5;
+//abc=[5,7,8];
+console.log(abc);
+
+//Ex of let keyword
+let abc=[1,2,3,6,4];
+console.log(abc);
+abc[2]=5;
+//a variable defined using let keyword can 
+//work in block scope
+{
+	let abc=[5,7,8];
+	console.log(abc);
+}
+console.log(abc);
+
+//Ex of default parameters
+function sayHello(name='JF036',num=3){
+	console.log(name+" says 'hello' " 
+			+num+" times");
+//template literal (React | interpolation)
+	console.log(`${name} says 'hello'
+ ${num} times`);
+}
+
+sayHello('Amit');
+sayHello();
+
+//Ex of destructuring
+let arr=[1,2,3,5];
+//the line below
+let [a,b,c,d]=arr;
+console.log(`${a} 
+${b} 
+${c} 
+${d}`);
+
+//when applying destructuring on an object, the variable names should match the property names
+let person={name:'soma',city:'Kolkata'}
+let {name,city}=person;
+console.log(name);
+console.log(city);
+
+/* https://www.w3schools.com/react/react_es6_destructuring.asp
+*/
+ 
+Ex of map() method
+let arr=[16,25,36,54];
+let res=arr.map(Math.sqrt);
+console.log(res);
+console.log(arr);
+res=arr.map((k) => (k/3).toFixed(2));//arrow function
+console.log(res);
+
+//array of objects
+let users=[
+	{id:101,
+	fname:'Tanuja',
+	lname:'Kanekar'
+	},
+	{id:102,
+	fname:'Durga Shankar',
+	lname:'Pandey'
+	}
+]
+res=users.map((u) => `${u.fname} ${u.lname}`);
+console.log(res);
+
+/*https://www.w3schools.com/jsref/jsref_map.asp*/
+
+Ex of class in ES6
+class Book{
+	
+	print(){
+console.log(`${this.name} has ${this.pages} pages. `);
+	}
+
+	constructor(name='Complete Javascript',pages=189){
+		this.name=name;
+		this.pages=pages;
+	}	
+}
+
+let book=new Book();
+book.print();
+book=new Book('HeadFirst jQuery',216);
+book.print();
+
+/* https://www.w3schools.com/js/js_classes.asp */
+
+Ex of inheritance
+Please try the example given in the below link
+https://www.w3schools.com/js/js_class_inheritance.asp
+
+Ex of modules
+A module is nothing more than a chunk of JavaScript code written in a file.  We can export and import such modules
+
+The package.json file is kind of a manifest for your project. 
+To create such a file, we will write the command in cmd
+npm init
+Open the json file created and add
+	"type":"module"
+
+//app.js
+export class Book{	
+	print(){
+console.log(`${this.name} has ${this.pages} pages. `);
+	}
+
+	constructor(name='Complete Javascript',pages=189){
+		this.name=name;
+		this.pages=pages;
+	}	
+}
+
+/* named export */
+//app.js
+export class Book{}
+
+//myscript.js
+import {Book} from './app.js'
+let book=new Book();
+book.print();
+
+/* default export */
+//app.js
+export default class Book{}
+
+//myscript.js
+import myBook from './app.js'
+let book=new myBook();
+book.print();
+book=new myBook('HeadFirst jQuery',216);
+book.print();
+
+FYR: https://medium.com/@etherealm/named-export-vs-default-export-in-es6-affb483a0910
+
+Concepts of React 
+------------------
+
+npm install create-react-app
+npx create-react-app first-app
+cd first-app
+npm start
+
+Project structure
+public/index.html| is the main HTML file of our app that includes your React code and provides a context for React to render to..
+
+src/index.js |This is the javascript file corresponding to index.html. This file has the following line of code which is very significant. ReactDOM.render(<App />, document.getElementById('root'));
+
+//code snippet
+import React from 'react';
+import ReactDOM from 'react-dom';
+
+//const elem=<><h2> Hello Everyone !!!</h2></>;
+const elem=React.createElement("h2",{Style:'color:green'},"good evening");
+ReactDOM.render(
+  elem ,
+  document.getElementById('my-root')
+);
+
+The react package contains only the functionality necessary to define React components.
+The react-dom package serves as the entry point to the DOM and renders for React.
+
+React.createElement() | Create and return a new React element of the given type.
+
+const elem=React.createElement("h2",{Style:'color:green'},"good evening");
+
+Use JSX instead
+const elem=<h2>Good Evening</h2>
+
+const elem=<div>
+  <h2>Good Evening</h2>
+  <p>Have a great learning ahead</p>
+</div>
+
+What is JSX? Extension of Javascript
+It is recommended using it with React to describe what the UI should look like. 
+
+JSX is a JavaScript Extension Syntax used in React to easily write HTML and JavaScript together. This is simple JSX code in React. But the browser does not understand this JSX because it's not valid JavaScript code.
+
+ReactDOM.render(
+  elem ,
+  document.getElementById('my-root')
+)
+
+The ReactDOM.render() function takes two arguments, HTML code and an HTML element. The purpose of the function is to display the specified HTML code inside the specified HTML element.
+
+//index.html
+<div id="my-root"></div>
+
+FYR: https://www.freecodecamp.org/news/quick-guide-to-understanding-and-creating-reactjs-apps-8457ee8f7123/
+
+React is based on Components.
+Components are independent and reusable bits of code. They serve the same purpose as JavaScript functions, but work in isolation and return HTML. Components come in two types, Class components and Function components
+
+Funtion component
+//App.js
+import './App.css';
+
+function App(props) {
+  return (
+  <>
+  <h2> We are learning {props.topic}. </h2>
+  </>
+  );
+}
+
+export default App;
+
+//index.js
+import {App} from './App';
+
+ReactDOM.render(
+  <App topic="React concepts"/> ,
+  document.getElementById('my-root')
+);
+
+valid React component because it accepts a single "props" (which stands for properties) object argument with data and returns a React element. We call such components "function components" because they are literally JavaScript functions.
+
+TBD
+Class component
+Props and State in class component
+
+How to upload your handson for React in TT platform?
+Please create a zip file excluding node-modules folder.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
