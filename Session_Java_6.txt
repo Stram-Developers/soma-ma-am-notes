@@ -1,0 +1,312 @@
+a) Exception Handling
+b) StringBuilder (StringBuffer)
+c) Annotations
+d) Garbage Collection
+
+What is an exception? An exception is an abnormal situation 
+which disrupts the flow of the program.
+
+We are not going to try to stop exception, we will try to handle the exception so that the program finishes gracefully.
+
+In Java, there is a class hierarchy to handle exceptions..
+java.lang.Object
+	java.lang.Throwable
+		java.lang.Exception
+		java.lang.RuntimeException				java.lang.NullPointerException
+	java.lang.ArithmeticException
+	java.lang.NumberFormatException			java.lang.ArrayIndexOutOfBoundException
+			java.io.IOException
+			java.sql.SQLException
+		java.lang.Error
+
+Difference between Error and Exception
+Error are irrecoverable exceptions such as VirtualMachineError, OutOfMemoryError, StackOVerflowError
+
+Exceptions are recoverable. We can continue with the application even after the exception has occurred by properly handling them.
+
+What is the difference between checked and unchecked exception?
+If the exception class extends the Exception class then it falls under the category of checked exception.
+
+When you use such a method for which the compiler forces you to provide either a try-catch block to handle the exception or add throws clause to delegate the exception.
+
+The checked exceptions are where the methods can fail because of external factors.
+
+Ex1:
+public static void main(String[] args) {
+		String str="2022-05-15";
+		SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd");
+		try {
+			Date date=sdf.parse(str);
+			System.out.println(date);
+		} catch (ParseException e) {
+			System.out.println(e.getMessage());
+		}
+}
+
+Ex2:
+public static void main(String[] args) {
+		try {
+			FileReader fr=new FileReader("D://myfile.txt");
+		} catch (FileNotFoundException e) {
+			System.out.println(e.getMessage());
+		}
+	}
+
+If the exception class extends the RuntimeException class then it falls under the category of unchecked exception.
+
+The compiler does not force you to add any such blocks.
+
+Ex 3:
+class Person{
+	String name;
+}
+public class Main {
+	public static Person fetch(int id) {
+		return null;
+	}
+	public static void main(String[] args) {
+		Person p=fetch(105);
+		if(p!= null)
+			System.out.println(p.name);
+		else
+			System.out.println("No record found");	
+	}
+}
+
+We can
+a) handle the exception using try, catch and finally keywords
+try block will contain the statements which may raise an exception
+catch block contains statements to handle the exception if occurred
+finally block contains statements to close the resources irrespective of the fact that exception has occurred or not.
+
+TRY [
+	OPEN A TAP
+	-WATER FLOWS
+	-NO WATER  
+]CATCH[
+	CHECK THE RESERVOIR SWITCH ON THE PUMP
+]
+FINALLY[
+	 CLOSE THE TAP
+]
+
+What is the difference between final and finally?
+We use final keyword to make a class not inheritable or a method not overridden in the derived class or a variable constant in Java.
+
+We use finally block to close any resources whether the situation is normal or exceptional.	
+
+Points:
+a) try block is always accompanied by catch(n), finally or both.
+b) try-catch-finally can also be nested.
+c) A catch block with Exception reference MUST BE THE LAST CATCH BLOCK.
+
+Ex4:
+import java.io.*;
+public class Main {
+	public static void main(String[] args) {
+	BufferedReader br = null;
+		try {
+	FileReader fr = new FileReader("myfile.txt");
+	br = new BufferedReader(fr);
+		String s = br.readLine();
+		while (s != null) {
+		System.out.println("Read: " + s);				s = br.readLine();
+		}
+		} catch (IOException fnfe) {
+			System.out.println(fnfe.getMessage());
+		} catch (Exception fnfe) {
+			System.out.println(fnfe.getMessage());
+		} finally {
+			try {
+				if (br != null)
+					br.close();
+			} catch (IOException e) {
+				System.out.println(e.getMessage());
+			}
+		}
+	}
+}
+
+b) delegate the exception using throw and throws clause
+When we actually raise the exception, we use throw
+We create an object of that Exception class.
+
+A method can declare mutiple exception classes separated by comma after throws clause
+
+Ex5:
+public class Main {	
+	static void readLoud(String fileName) throws IOException,ParseException {
+		SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd");
+		sdf.setLenient(false);
+		BufferedReader br = null;
+		FileReader fr = new FileReader(fileName);
+		br = new BufferedReader(fr);
+		String s = br.readLine();
+		while (s != null) {
+			Date dt=sdf.parse(s);
+		System.out.println("Read: " + dt);
+			s = br.readLine();
+		}
+			br.close();
+	}
+	public static void main(String[] args) {	
+		try {
+			readLoud("myfile.txt");
+		} catch (IOException fnfe) {
+			System.out.println(fnfe.getMessage());
+		} catch (Exception fnfe) {
+			System.out.println(fnfe.getMessage());
+		} finally {
+			
+		}
+	}
+}
+
+Custom Exception example
+Refer to Main.java
+
+StringBuilder class creates mutable references unlike String class. StringBuffer class also provides similar methods as StringBuilder but the methods are synchronized which means thread safe.
+
+Ex 1:
+public class Main2 {
+	public static void main(String[] args) {
+		StringBuilder sb = new StringBuilder();
+		sb.append("Java ")
+		.insert(0, "Welcome to ")
+		.append("programming")
+		.delete(sb.length()-3,sb.length()).reverse();
+		System.out.println(sb);// toString()
+	}
+}
+new StringBuilder(String str);
+Constructs a string builder initialized to the contents of the specified string. The initial capacity of the string builder is 16 plus the length of the string argument.
+
+Ex:
+public class Main2 {
+	public static void main(String[] args) {
+	StringBuilder sb = new StringBuilder("java");
+	System.out.println(sb.capacity());// 16 +length of string passed
+	sb.append(" is a object oriented");
+	System.out.println(sb);
+	System.out.println(sb.capacity());//oldcap*2+2		
+	}
+}
+
+Garbage Collection
+Java provides inbuilt mechanism to collect and deallocate the memory of unused objects from the heap of JVM.
+
+We can pass a request to the JVM for executing the gc process in either of the two ways:
+a) Runtime.getRuntime().gc()
+b) System.gc()
+
+Runs the garbage collector. 
+Calling the gc method suggests that the Java Virtual Machine expend effort toward recycling unused objects in order to make the memory they currently occupy available for quick reuse. 
+
+Ex1:
+class Person{}
+public class Main2 {
+	public static void main(String[] args) {
+		Runtime runtime=Runtime.getRuntime();
+System.out.println("A| "+runtime.freeMemory()/1024+" kb");
+		for(int i=1;i<=100000;i++) {
+			Person p=new Person();
+		}
+		
+System.out.println("B| "+runtime.freeMemory()/1024+" kb");		System.gc();		
+System.out.println("C| "+runtime.freeMemory()/1024+" kb");
+	}
+}
+
+Whenever the gc process runs, it implicitly calls the finalize() method. We get this method inherited from the Object class which we can also override. The utility of this method is do clean up operations.
+
+Ex 3|
+class Person{
+	@Override
+	protected void finalize() throws Throwable {
+		System.out.println("finalize called");
+		super.finalize();
+	}	
+}
+public class Main2 {
+	public static void main(String[] args) {
+		Runtime runtime=Runtime.getRuntime();		
+		Person p=null;
+		for(int i=1;i<=3;i++) {
+			 p=new Person();
+			 System.out.println(p);
+		}
+		System.out.println(p);
+		p=null;
+		System.gc();		
+	}
+}
+
+Annotations| These are instructions to the compiler or the virtual machine or both
+Examples:
+	@Override | Indicates that a method declaration is intended to override a method declaration in a supertype. 
+	@Deprecated | A program element annotated @Deprecated is one that programmers are discouraged from using, typically because it is dangerous,or because a better alternative exists. Compilers warn when a deprecated program element is used or overridden in non-deprecated code.
+	@SupressWarnings |Indicates that the named compiler warnings should be suppressed in the annotated element 
+	@FunctionalInterface |An informative annotation type used to indicate that an interfacetype declaration is intended to be a functional interface 
+
+Ex 1:
+class Person{
+	String name;
+	Person(String name){
+		this.name=name;
+	}
+	@Deprecated
+	Person(){
+		this.name="guest";
+	}
+	@Override
+	public String toString() {
+		return (name+ " says Hello!!");
+	}
+}
+public class Main2 {
+	public static void main(String[] args) {
+		Person p=new Person();
+		System.out.println(p);//toString()
+	}
+}
+
+Ex 2:
+@FunctionalInterface
+interface IFace{
+	public void meth();
+	public default void meth1() {}
+}
+public class Main2 {
+	public static void main(String[] args) {
+	@SuppressWarnings("rawtypes")
+	List list=new ArrayList();
+	//ArrayList is a raw type. References to generic type
+	//ArrayList<E> should be parameterized
+			
+	}
+}
+
+-- Java 8 --
+Lambda Expressions
+Stream API
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

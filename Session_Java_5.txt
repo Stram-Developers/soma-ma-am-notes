@@ -1,0 +1,249 @@
+a) Map interface and its implementations
+b) Work with a collection of user defined objects
+c) Exploring the Date API (Java 7 & Java 8)
+
+java.util.Map is an interface which holds elements as key-value pairs.The keys can never be duplicate but values can be
+duplicate.
+
+There are 3 implementations of the Map interface.
+a) TreeMap which has the keys in sorted order
+It cannot contain a null key.
+b) LinkedHashMap which has the keys stored in insertion based order
+c) HashMap which has the keys present in random order.
+It can contain a null key as well as null as value.
+
+map.put(k,v);
+If we try to add the same key, the old value gets replaced with the new value.
+
+Example:
+public class Main {
+	public static void main(String[] args) {
+		Map<Integer, String> map = new LinkedHashMap<>();
+		System.out.println(map.put(1, "apple"));//null
+		System.out.println(map.put(1, "orange"));//apple
+		System.out.println(map.putIfAbsent(1,"lemon"));//orange
+		System.out.println(map);
+		System.out.println(map.putIfAbsent(2,"lemon"));//null
+		System.out.println(map);
+		System.out.println(map.isEmpty());
+		System.out.println(map.size());
+		System.out.println(map.containsKey(2));
+		System.out.println(map.containsValue("banana"));
+	//	System.out.println(map.remove(1));
+		System.out.println(map.remove(1,"grapes"));//false
+		System.out.println(map);
+		map.clear();
+		System.out.println(map.isEmpty());
+	}
+}
+
+How to traverse a Map instance?
+Example:
+public class Main {
+	public static void main(String[] args) {
+		Map<Integer, String> map = new TreeMap<>();
+		map.put(1, "abcd");
+		map.put(4, "acbd");		map.put(3, "cabd");
+		map.put(5, "bcad");		map.put(2, "bbca");
+		//System.out.println(map);//toString()
+		
+		//use keySet()
+		Set<Integer> set=map.keySet();
+		for(int k:set) {
+		System.out.println(k+" | "+map.get(k));
+		}
+		
+		//use entrySet()
+		Set<Map.Entry<Integer,String>> set1=map.entrySet();
+		for(Map.Entry<Integer, String> en: set1) {
+	System.out.println(en.getKey()+" --> "+en.getValue());
+		}		
+	}
+}
+
+
+WAP to accept a number of products along with their types.
+Create a Map with product type(String) as key and number of such products(Integer) as value.
+
+Sample Input
+5
+tomato-veg
+salt-grocery
+hair oil- cosmetic
+mustard oil-grocery
+cabbage-veg
+
+Sample Ouput
+{cosmetic-1,grocery-2,veg-2}
+
+Practice Time:
+WAP to accept a number of email ids.
+Create a Map with domain(String) as key and number of such email ids(Integer) as value.
+
+Sample Input
+abc@yahoo.com
+abcd@gmail.com
+qwe@yahoo.com
+yxza@yahoo.com
+dfdgs@gmail.com
+
+Sample Output
+{gmail=2,yahoo=3}
+
+Work with a collection of user defined objects
+Class Book with the private data members [title, price]
+Collection of such books...
+
+Collections.sort(books);//error
+Book is an udt;jvm is not aware about which attribute it should use to sort the books (title, price, ...).
+
+Solution: To inform the JVM the criteria to be used for sorting. We will therefore implement the java.lang.Comparable interface in the Book class and override the compareTo(Object obj){} in the Book class. In this method, we will mention the logic for sorting.
+
+	@Override
+	public int compareTo(Book bk) {
+		// TODO Auto-generated method stub
+		return bk.price.compareTo(this.price);
+	}
+
+All the Wrapper classes and String class has already overridden the compareTo() method.
+
+bk.price.compareTo(this.price); //desc
+this.price.compareTo(bk.price);//asc
+
+When you call the sort() method on the Collections class
+the JVM checks if all elements in the list has implemented the Comparable interface. 
+
+Exploring the Date API (Java 7 & Java 8)
+
+-- Java 7 --
+java.util.Date
+java.util.Calendar
+java.text.SimpleDateFormat 
+
+getTime() of Date class Returns the number of milliseconds since January 1, 1970, 00:00:00 GMT represented by this Date object.
+
+Example1:
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
+public class Main3 {
+
+	public static void main(String[] args) {
+		// today's date
+		Date today=new Date();
+		System.out.println(today);
+		
+		//String input
+		String joining="2022-01-27";
+		//convert into Date object
+		SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd");
+		try {
+		//parse() is used to convert String to Date reference
+	Date joinDate=sdf.parse(joining);
+	System.out.println(joinDate);
+			
+			//joinDate before or after today??
+	System.out.println(today.after(joinDate));//before
+			
+			//diff btwn two dates
+	long milis=today.getTime()-joinDate.getTime();
+	System.out.println(milis/(1000*60*60*24)+" days");
+			
+		}catch(Exception ex) {
+			System.out.println(ex.getMessage());
+		}
+	}
+}
+
+Calendar is an abstract class which has methods like add() to add or substract days/months/years from a Date reference.
+
+Example 2:
+import java.util.Calendar;
+import java.util.Date;
+public class Main3 {
+	public static void main(String[] args) {
+		// today's date
+		Date today=new Date();
+		System.out.println(today);
+		
+		Calendar cal=Calendar.getInstance();
+		//instance of GregorianCalendar class
+		cal.setTime(today);
+		cal.add(Calendar.DATE, -6);
+		Date revisedDate=cal.getTime();		
+		System.out.println(revisedDate);		
+	}
+}
+
+Java 8|
+java.time.LocalDate
+java.time.LocalTime
+java.time.LocalDateTime
+java.time.Period, java.time.Duration
+....
+
+Example:
+import java.time.*;
+import java.time.format.DateTimeFormatter;
+
+public class Main4 {
+	public static void main(String[] args) {
+		LocalDate today=LocalDate.now();
+		System.out.println(today);
+		LocalTime current=LocalTime.now();
+		System.out.println(current);
+		
+		String joining="2020-06-27";
+		//String to LocalDate conversion
+		DateTimeFormatter dtf=
+				DateTimeFormatter.ofPattern("yyyy-MM-dd");
+		LocalDate joinDate=LocalDate.parse(joining,dtf);
+		System.out.println(joinDate);
+		
+		System.out.println(joinDate.isAfter(today));
+		System.out.println(joinDate.isLeapYear());
+		System.out.println(joinDate.plusDays(6));
+		System.out.println(joinDate.minusMonths(5));
+		
+		//diff btwn to dates
+		Period period=Period.between(joinDate,today);
+		System.out.println(period);
+		System.out.println(period.toTotalMonths()+" months & "+period.getDays()+" days");
+		
+		//LocalTime
+		System.out.println(current.plusHours(3));
+	}
+}
+
+TBD (Saturday we will start from 9:00 am)
+a) Exception Handling
+b) StringBuilder (StringBuffer)
+c) Annotations
+d) Garbage Collection
+----------------------------
+File Handling
+Lamdba Expression
+Stream API
+Thread basics
+JDBC
+Design Principlea and Patterns
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

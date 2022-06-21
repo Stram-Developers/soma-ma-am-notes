@@ -1,0 +1,215 @@
+Eclipse IDE
+IDE (Integrated Development Environment) used to create applications (console based, web based, web service and more)
+
+A project contain multiple classes which makes a single application.
+
+How to create a Java Project? File > New > Java Project
+You get to see the project under the "Package Explorer" view.
+Expand the project to find the src folder.
+Right click the src folder to add a new class.
+The class name is recommended to start with upper case letter.
+Syso[Ctrl+space] System.out.println("Hello");
+
+It will show the output on the Console Editor.If not visible, Window > ShowView > Console.
+
+Java Naming Conventions
+-------------------------
+a) The class name should start with upper case letter.If it contains multiple words, each word's first letter should be in caps. Ex: ShoppingCart, Employee, MobileStore
+b) The class name MUST BE A NOUN.
+c) The method name MUST BE A VERB; some action register(), compute(), process(), signIn()
+d) The method name should start with lower case letter.If it contains multiple words, second word's first letter should be in caps. Ex: addToCart(), saveEmployeeRecord(), editProfile()
+e) The variable name should follow similar convention as method.
+Ex: firstName,joiningDate,salary,paySlip,leaveBalance
+f) The package name must be entirely in lower case.
+Ex: java.util, java.lang, com.cognizant.model,com.cognizant.service
+
+PMD (Programming Mistake Detector), CPD (Copy Paste Detector)
+
+Points:
+1. If a class is defined without public access modifier, we can
+write it in a file with different name.
+2. If a class is defined with public access modifier, we have to keep the class in the file with same name.
+ class Sample is public, should be declared in a file named Sample.java
+3. In a source file, we can declare a package by writing
+	package com.project;
+If present this line should be the first line in a file.
+4. A package declaration can be followed by zero or more import
+statements; to include other packages.
+5. A class which is defined public can be accessed from any other class.
+6. We declare a package to properly arrange multiple classes and interfaces related to common objective.
+7. Other than public Java has 3 more access modifiers
+private | Any resource which is private cannot be accessed outside the class.
+package private aka default | Any resource which is package private can be only accessed from any class in the same package
+but not outside the package.
+protected | Any resource which is protected can be accessed from all the classes in the same package plus derived classes in a different package. Derived means having inheritance relationship(IS A)
+
+Example:
+package com.project;
+public class Main {
+	protected int secretCode=485;
+}
+
+package com.task;
+import com.project.Main;
+public class Demo extends Main{
+	public static void main(String[] args) {
+		Demo m=new Demo();
+		System.out.println(m.secretCode);
+	}
+}
+
+Concept of getters and setters
+Why??
+The getter and setter ae the two public methods which create a way to access the private data member defined in a class.
+
+private int age;
+//used to fetch the value
+public int getAge(){
+	return age;
+}
+//used to store the value
+public void setAge(int age){
+	if(age>0)
+		this.age=age;
+	else
+		this.age=18;
+}
+private long minTemp;
+public long getMinTemp(){}
+public void setMinTemp(long minTemp){}
+
+Add getter and setter without writing code manually in Eclipse.
+Press [Alt+Shft+S] to generate getter and setter as well as constructors.
+
+Example:
+class Boiler {
+	private long minTemp;
+	public long getMinTemp() {
+		return minTemp;
+	}
+	public void setMinTemp(long minTemp) {
+		if (minTemp > 500)
+			this.minTemp = minTemp;
+		else
+			this.minTemp = 500;
+	}
+}
+
+Use of "this" keyword in "this.minTemp = minTemp;"
+The this keyword implies current instance.
+It is being used to resolve the ambiguity between local variable(parameter) and the instance variable when both of them have the same name.
+	this.minTemp =>instance variable
+	minTemp => parameter
+
+String class and its methods
+We can create a String instance either in one of the two ways:
+a) String s=new String("java");
+ String ss=new String("java");
+The memory will be allocated from the JVM heap and for each above line a new memory allocation will be done.
+
+b) String t="java";
+String tt="java";
+There is a special area within the jvm heap known as String pool.
+The JVM will first search the pool for an object with same content.
+If not found, the jvm will create a object in the pool and assign
+the address into the variable.
+If found, the jvm will not create a object in the pool rather assign the address of the existing object into the variable.
+
+MEMORY GETS SAVED.
+
+Why is String object IMMUTABLE?
+What if I change the value of tt varible to  'oracle' then what will happen. will jvm assign new memory to tt varible?
+
+String tt="oracle";
+The original content will not be modified, rather the JVM will search the pool for the same content. If not found, will create an object with the content and assign back to the variable tt.
+So t will now refer to "java" and tt will now refer to "oracle".
+
+Example:
+public class Main {
+	public static void main(String[] args) {
+		String t="java";
+		String tt="java";
+		System.out.println(t==tt);//memory address
+		System.out.println(t.equals(tt));//content
+		tt="oracle";
+		System.out.println(t==tt);//memory address
+		System.out.println(t.equals(tt));//content
+	    System.out.println(t+" | "+tt);
+	}
+}
+
+String class methods
+Example:
+public class Main {
+	public static void main(String[] args) {
+		String t="java program";
+	System.out.println(t.charAt(0));
+	System.out.println(t.endsWith("ram"));//startsWith(),contains()
+	System.out.println(t.indexOf("a"));//first occurrence
+	System.out.println(t.lastIndexOf("a"));//last or -1
+	System.out.println(t.length());
+	System.out.println(t.equals("Java"));
+	System.out.println(t.equalsIgnoreCase("Java PRogram"));
+System.out.println(t.trim());//removes spaces from beg or end
+	}
+}
+
+Example 2:
+public class Main {
+	public static void main(String[] args) {
+		String t="AB1DEF234K";
+		//pan card
+		/*
+		 * first 5 alphabets,next 4 digits,last 1 alphabet
+		 */
+		String pattern="[A-Z]{5}[0-9]{4}[A-Z]{1}";
+		System.out.println(t.matches(pattern));
+		String mobPattern="[6-9]{1}[0-9]{9}";
+		String colorPattern="[#]{1}[0-9A-F]{6}";
+	}
+}
+
+Example 3:
+public class Main {
+	public static void main(String[] args) {
+		String fdbck="orange-color|orange-fruit";
+		String words[]=fdbck.split("\\|");
+		System.out.println(words.length);
+	}
+}
+
+Composition relationship (HAS A)
+Handle user defined array of objects
+
+Trainee HAS A Laptop
+Car HAS A Engine
+Author HAS A Book
+
+Example: Team HAS MUTIPLE Players.
+Please refer to .java files attached
+
+We will see how to connect Eclipse IDE with Tekstac platform.
+
+TBD
+Inheritance (IS A) relationship
+Method Overriding
+Runtime Polymorphism
+Interface
+Abstract class
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

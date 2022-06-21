@@ -1,0 +1,316 @@
+14th Feb:
+	Lambda Expressions
+Stream API
+15th Feb:
+File Handling
+Thread basics
+16th Feb: 
+JDBC CRUD Application
+17th Feb: Design Principles
+SOLID 
+Singleton
+Abstract Factory
+18th Feb and 19th Feb
+Builder
+Adapter
+Chain Of Responsibility
+Facade
+Mediator
+Observer
+
+Total 29 Core Java Mandatory HandsOn
+Approx 14 hands-on on Design Principles and Patterns
+Atleast 5 hands-on we need to complete before 21st Feb 2022
+
+Rest of 9 has to be completed before Stage 1 ICT (Core Java)
+Along with it we need to complete 5 out of 15 hands-on on Data Structure on the Hackerrank platform.
+
+21st Feb'2022: (Monday)
+22nd Feb'2022: Core Java CC
+
+Mock ICT will be held on 24th Feb 2022
+Stage 1 ICT : 25th Feb 2022
+
+Singleton Design Pattern
+According to this pattern, we will only be able to access a single instance of the class.
+For example java.lang.Runtime class follows Singleton pattern.
+Runtime runtime=Runtime.getRuntime();
+
+1. Create a static reference of the class.
+2. Make the no arg constructor private.
+3. Create a static method to access the reference object of the class.
+
+Example:
+//singleton pattern
+public class DBConn {
+	private static DBConn instance=null;
+	private DBConn() {	}	
+	public static DBConn getInstance() {
+		if(instance==null) {
+	System.out.println("object created");
+			instance=new DBConn();
+		}else {
+	System.out.println("object already present");;
+		}		
+		return instance;
+	}
+}
+
+Lambda Expressions
+Lamdba Expression is a way of implementing Functional Programming in Java.
+For writing Lambda Expression, we need a functional interface.
+It is an interface which has one and only one abstract method
+defined in it.
+
+Example:
+interface IFace{
+	int compute(int a ,int b);
+}
+class Addition implements IFace{
+	public int compute(int x,int y) {
+		return x+y;
+	}
+}
+class Product implements IFace{
+	public int compute(int x,int y) {
+		return x*y;
+	}
+}
+
+Example: Anonymous class | A nested class without a name.
+Anonymous classes enable you to make your code more concise. They enable you to declare and instantiate a class at the same time. They are like local classes except that they do not have a name. Use them if you need to use a local class only once.
+
+interface IFace{
+	int compute(int a ,int b);
+}
+public class Main {	
+	public static void main(String[] args) {
+		IFace iface=new IFace() {
+			public int compute(int x,int y) {
+				return x+y;
+			}
+		};
+		System.out.println(iface.compute(5, 6));
+		
+		iface=new  IFace() {
+			public int compute(int x,int y) {
+				return x*y;
+			}
+		};
+		System.out.println(iface.compute(5,6));
+	}
+}
+
+Example: Java 8 we will use Lambda Expressions 
+Lambda expressions enable you to do this, to treat functionality as method argument, or code as data.
+
+interface IFace{
+	int compute(int a ,int b);
+}
+public class Main {	
+	public static void main(String[] args) {
+		IFace iface=(int x,int y) -> {
+			return x+y;			
+		};
+		System.out.println(iface.compute(5, 6));
+		
+		iface=(x,y) ->(x*y);			
+		System.out.println(iface.compute(5,6));
+		
+		iface=(x,y) ->Math.abs(x-y);			
+		System.out.println(iface.compute(5,6));
+	}
+}
+
+FYR: https://www.geeksforgeeks.org/anonymous-inner-class-java/
+
+Another real time example of Lambda Expression
+java.util.Comparator interface: Example of functional interface. A comparison function, which imposes a total ordering on some collection of objects. Comparators can be passed to a sort method (such as Collections.sort or Arrays.sort) to allow precise control over the sort order. 
+
+int compare(T o1, T o2);
+Comparator<Book>
+	int compare(Book b1, Book b2);
+Comparator<Book> comp=(x,y)->(x.getTitle().compareTo(y.getTitle());
+	Collections.sort(books,comp);
+
+All the Wrapper clases and String class have already overridden
+the compareTo() method from the java.lang.Comparable interface.
+
+Example:
+Assuming that you have the class Book with private data members
+String title and Double price.
+
+public class Main3 {
+	private List<Book> books = new ArrayList<>();
+	Main3() {
+	books.add(new Book("Complete Java", 226.52));
+	books.add(new Book("ABC of Java", 162.57));			books.add(new Book("Learn Java", 284.02));
+	books.add(new Book("How to code in Java", 339.0));
+	books.add(new Book("Code in Java", 195.20));
+	}
+	public void printAll() {
+	for (Book bk : books) {
+System.out.println(bk.getTitle() + " | " + bk.getPrice());
+	}
+	}
+
+	public static void main(String[] args) {
+		Scanner sc = new Scanner(System.in);
+		System.out.println("1. Title Asc,2. Title Desc");
+		System.out.println("3. Price Asc,4. Price Desc");
+		String opt = sc.nextLine();
+		Comparator<Book> comp=null;
+		switch (opt) {
+		case "1":
+			comp=(b1,b2)-> b1.getTitle().compareTo(b2.getTitle());
+			break;
+		case "2":
+			comp=(b1,b2)-> b2.getTitle().compareTo(b1.getTitle());
+			break;
+		case "3":
+			comp=(b1,b2)-> b1.getPrice().compareTo(b2.getPrice());
+			break;
+		case "4":
+			comp=(b1,b2)-> b2.getPrice().compareTo(b1.getPrice());
+			break;
+		}
+		Main3 m3=new Main3();
+		Collections.sort(m3.books,comp);
+		m3.printAll();
+		sc.close();
+	}
+}
+
+------------------------------------------------
+class Book implements Comparable<Book>{
+	public int compareTo(Book bk){
+		return this.title.compareTo(bk.title);
+	}
+}
+
+Comparator<Book>
+	public int compare(Book b1,Book b2){
+		return b1.getPrice().compareTo(b2.getPrice());
+	}
+-------------------------------------------------
+
+Stream API
+java.util.stream package
+- It makes working with arrays and collections easier.
+
+Given an array of Strings, WAP to display the array after
+removing duplicates and in sorted order.
+
+Create a TreeSet reference and transfer the elements from the
+array into the set reference with the help of a loop.
+
+Way using Stream API
+import java.util.*;
+import java.util.stream.*;
+
+public class Main4 {
+	public static void main(String[] args) {
+		String[] arr= {"p","a","b","c","a","d","c","e","t","k"};
+		Stream<String> stream=Arrays.stream(arr);
+		stream
+		.distinct()
+		.sorted(Comparator.reverseOrder())
+		.forEach(p -> System.out.println(p));
+		
+		System.out.println(Arrays.toString(arr));
+	}
+}
+The Stream API is used to process collections of objects. A stream is a sequence of objects that supports various
+ methods which can be pipelined to produce the desired result.
+
+There are two types of operations:
+a) intermediate operation like .distinct(),.sorted(),.filter() because they return a new Stream reference for further operation.
+b) terminal operation like .count(), .collect(), .forEach() because they do not return a new Stream but are either void or return some other data type.
+
+A stream can have multiple intermediate operations but only one terminal operation.
+
+Points:
+a) Stream takes input from the Collections, Arrays
+b) Streams don't change the original data structure, they only provide the result as per the pipelined methods.
+c) Each intermediate operation is lazily executed and returns a stream as a result, hence various intermediate 
+operations can be pipelined. 
+
+Terminal operations mark the end of the stream and return the result.
+
+Java IntStream class is an specialization of Stream interface for int primitive. It represents an stream of primitive int-valued elements.
+
+Ex 1:
+public class Main4 {
+	public static void main(String[] args) {
+		//array of primitives
+		int[] intArray= {1,2,5,1,2,3,6};
+		IntStream stream=Arrays.stream(intArray);
+		stream
+		.distinct()
+		.filter(y ->y%2==0)
+		.forEach((u)->System.out.println(u));
+	}
+}
+
+Ex 2:
+public class Main4 {
+	public static void main(String[] args) {
+		//List of Strings
+		List<String> myList=Arrays.asList("abcd","abcb","accb","babc","bbca","bcbc","dadc","ddca");
+		Stream<String> stream=myList.stream();
+		long cnt=stream	
+	.filter(h-> (h.startsWith("a") && h.endsWith("b")))
+	.count();
+		System.out.println(cnt);
+		
+		stream=myList.stream();
+		stream
+		.filter(h-> (h.startsWith("a") && h.endsWith("b")))
+		.map((y)->y.toUpperCase())
+		.forEach(k-> System.out.println(k));
+	}
+}
+
+Ex 3:
+public class Main5 {
+	public static void main(String[] args) {
+		Main3 m3=new Main3();
+		Stream<Book> bookStream=
+				m3.getBooks().stream();
+		
+		List<Book> sortedList=bookStream
+			.filter(b->b.getPrice()>=250.0)
+			.sorted((b1,b2)->b1.getPrice().compareTo(b2.getPrice()))
+			//.forEach((h)->System.out.println(h.getTitle()+" - Rs."+h.getPrice()));
+			.collect(Collectors.toList());
+		
+	for(Book b:sortedList) {				System.out.println(b.getTitle()+" :"+b.getPrice());
+		}
+	}
+}
+
+Ex 4:
+public class Main5 {
+	public static void main(String[] args) {
+		Main3 m3=new Main3();
+		Stream<Book> bookStream=
+				m3.getBooks().stream();
+		
+		Optional<Book> book1=bookStream			
+			.sorted((b1,b2)->b1.getPrice().compareTo(b2.getPrice()))			
+			.findFirst();
+		
+		Book bk=book1.get();
+		System.out.println(bk.getTitle()+" "+bk.getPrice());	
+		
+	}
+}
+
+
+
+
+
+
+
+
+

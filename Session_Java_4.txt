@@ -1,0 +1,277 @@
+Interfaces
+Collection Framework
+
+Interface is an aggrement which states the services which will be made available but not how they will be made available.
+
+MenuCard exposes the food items you will get from the outlet but does not tell how will they be...
+
+A class in Java can implement multiple interfaces; a way of having multiple inheritance.
+
+a) Till JDK 1.7, an interface could only have public abstract methods.
+b) From Java 8, an interface can also have non abstract (default)
+as well as static methods.
+c) The static method can only be accessed directly using the Interface name.
+
+interface IFace{
+	default void meth1() {
+		System.out.println("non abstract meth");
+	}
+	void meth2();
+	static void meth3() {
+		System.out.println("static method");
+	}
+}
+
+d) An interface without any methods declared is known as a MARKER interface. Ex: java.io.Serializable interface
+It is an empty interface (no field or methods)
+
+e) An interface when has one and only one abstract method,it is
+known as a FunctionalInterface. Ex: java.lang.Runnable which has only one abstract method public void run();
+Such interfaces become eligible candidates for Lambda Expression.
+
+f) A class can implement multiple interfaces but can extend only one class. A class first extends and then implements.
+
+g) An interface can extend other interfaces.When a class implements an interface which again extends other interfaces,the class has to override all the abstract methods present in the interface. 
+
+interface IFace{
+	void meth1();
+}
+interface IFirst extends IFace{
+	void meth2();
+}
+class SomeClass implements IFirst {
+	@Override
+	public void meth1() {
+		// TODO Auto-generated method stub		
+	}
+	@Override
+	public void meth2() {
+		// TODO Auto-generated method stub		
+	}	
+}
+
+Abstraction is one of the pillars of OOP. We will expose the relevant details,hiding the irrelevant details.
+
+Through an interface, exposing the services and hiding the implementation details.
+
+By encapsulation, we hide the behavior/attributes from other classes.
+
+Can't we use an abstract class here in place of an interface?
+We can but still interface is a step better.
+
+Collection Framework
+------------------------
+An array is a collection of elements but is of fixed size.
+We cannot add more elements that its size. Similarly, we cannot shrink the array all of a sudden.
+
+In Java, we have the java.util.Collection interface which exposes the services:
+a) add an element
+b) remove an element
+c) search for an element
+d) get an element
+e) find the size of the collection
+f) check if the collection is empty or not
+g) display the collection
+h) clear the collection
+
+java.util.Collection has two main sub interfaces : java.util.List and java.util.Set.
+
+The basic differences between List and Set are
+a) List allows duplicate elements whereas Set doesnot allow duplicate elements
+b) List allows index based search and removal whereas Set does not
+allow any index based operation.
+
+The List interface is implemented by the classes
+a) ArrayList b) LinkedList c) Vector
+
+ArrayList is based on resizable array concept.
+ArrayList instance, the JVM creates an array implicitly of size 
+
+The Set interface is implemented by the classes
+a) HashSet (has all the elements stored in random order) b) TreeSet (has all the elements stored in sorted order) 
+TreeSet does not allow any NULL value.
+c) LinkedHashSet (has all the elements stored in insertion based order)
+LinkedHashSet and HashSet: One NULL value is allowed.
+
+Example
+import java.util.*;
+public class Main {
+	public static void main(String[] args) {
+		List<String> coll=new ArrayList<>();
+	System.out.println(coll.add("abcd"));//boolean [true]
+		coll.add("abbc");
+		coll.add("babc");
+		System.out.println(coll.add("abcd"));//true
+		System.out.println(coll);//toString()
+		System.out.println(coll.get(0));
+		System.out.println(coll.remove(1));//"abbc"
+		System.out.println(coll.remove("bcbc"));//boolean
+		System.out.println(coll.contains("abbc"));
+		System.out.println(coll.size());//int
+		System.out.println(coll.isEmpty());//boolean
+		coll.clear();//void 
+		System.out.println(coll.size());//0
+	}
+}
+
+Example:
+import java.util.*;
+public class Main {
+	public static void main(String[] args) {
+		List<String> coll=new ArrayList<>();
+		coll.add("abcd");
+		coll.add("acbc");
+		coll.add("abcc");
+		coll.add("babc");
+		//share all the elements to a Set
+		Set<String> set=new HashSet<>();
+		set.add("abcc");
+		set.add("acbb");
+		
+		//set.addAll(coll);//union
+		//set.retainAll(coll);//intersect
+		set.removeAll(coll);//minus [b-a]
+		// you can also perform the same
+		//on a list
+		System.out.println(set);		
+	}
+}
+
+java.util.Collections class which provides several utility methods like sort(), frequency()
+
+Traversing a List in different ways...
+Iterator interface works with a List or Set.
+It is used to traverse a List or Set in forward direction.
+It can also remove an element from the collection while traversing.
+
+Example:
+import java.util.*;
+public class Main {
+	public static void main(String[] args) {
+		Integer[] arr= {5,1,2,3,6,4,1,2,3,7};
+		List<Integer> list=Arrays.asList(arr);
+		
+		//Collections - utility class
+		Collections.sort(list);//asc order
+		System.out.println(list);
+		
+		Collections.sort(list,Collections.reverseOrder());//desc order
+		System.out.println(list);
+		
+System.out.println(Collections.frequency(list, 2));
+//returns no of times 2 is present.
+		
+		list=new ArrayList<>();
+		list.add(5);list.add(2);
+		list.add(3);list.add(7);
+		list.add(6);list.add(2);
+
+		//Iterator
+		Iterator<Integer> it=list.iterator();
+		while(it.hasNext()) {
+			int num=it.next();
+			System.out.println(num);
+			if(num%2!=0)
+				it.remove();
+		}		
+		System.out.println(list);
+	}
+}
+
+The ListIterator interface extends the Iterator interface.
+We can use it only on a List not a Set.
+It is used to traverse a List in both directions.
+It can add as well as remove an element from the collection while traversing.
+
+Example:
+import java.util.*;
+
+public class Main {
+	public static void main(String[] args) {
+		List<Integer> list = new ArrayList<>();
+		list.add(5);
+		list.add(2);
+		list.add(3);
+		list.add(7);
+		list.add(6);
+		list.add(2);
+		boolean flag = true;
+		
+		//add or remove during iteration
+		//not possible
+		/*for(int k:list) {
+			System.out.println(k);
+			if (flag) {
+				//list.add(16);
+				list.remove(2);
+				flag = false;
+			}
+		}*/
+
+		for (int i = 0; i < list.size(); i++) {
+			System.out.println(list.get(i));
+			if (flag) {
+				list.add(16);
+				list.remove(2);
+				list.remove(new Integer(2));
+				flag = false;
+			}
+		}
+
+		/*ListIterator<Integer> it = list.listIterator(list.size());
+		while (it.hasPrevious()) {
+			int num = it.previous();
+			System.out.println(num);
+			if (num % 2 != 0) {
+				it.remove();
+			}
+			if (flag) {
+				it.add(16);
+				flag = false;
+			}
+		}
+		*/
+		System.out.println(list);
+	}
+}
+
+TBD
+a) Map interface and its implementations
+b) Work with a collection of user defined objects
+c) Exploring the Date API (Java 7 & Java 8)
+d) Exception Handling
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

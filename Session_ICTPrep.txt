@@ -1,0 +1,230 @@
+We will get 2 questions in our Java CC.
+You can appear for the CC either through Eclipse IDE and tekstac plugin or directly through tekstac portal based on
+your comfort.
+
+WAP to accept an email id and print "valid" or "invalid" based
+on below given rules:
+a) The @ sign must be present after second char and only once.
+b) There should be atleast 2 chars between @ sign and ".com".
+c) The email should end with ".com". 
+
+Sample Input
+ab@xy.com
+Sample Output
+valid
+
+WAP to accept a string and print "lucky" if the string contains
+atleast 3 distinct vowels else print "not lucky".
+
+Sample Input
+amphibian
+Sample Output
+not lucky
+
+Sample Input
+cauliflower
+Sample Output
+lucky
+
+Set<Character> set=new TreeSet<>();
+String vowels="aeiou";
+for(int i=0;i<str.length();i++){
+	if(vowels.contains(Character.toString(str.charAt(i))){
+		set.add(str.charAt(i));
+	}
+}
+if(set.size()>=3)
+	Syso(" ");
+
+
+WAP to accept details of two mobiles. Compare both the mobiles
+wrt color and price and print "similar" if same else "not similar".Override the equals() method [and toString() method]
+
+class Mobile{
+	String modelNo;
+	String color;
+	Double price;
+	public boolean equals(Object obj){
+		Mobile m=(Mobile)obj;	
+		if(m.color.equals(this.color) &&
+			m.price==this.price)
+		return true;
+
+		return false;
+	}
+}
+Sample Input
+Enter Model No
+SM123
+Enter color
+white
+Enter Price
+10000.0
+Enter Model No
+SM123
+Enter color
+white
+Enter Price
+10000.0
+Both mobiles are similar
+
+You have the following classes:
+class Student{
+	String name;
+	int rollNo;
+}
+Graduate which inherits Student and also has a specific
+variable String stream.
+PostGraduate which inherits Student and also has a specific
+variable int papersPublished.
+In the class Main add a static method print(Student student)
+and is responsible to display the details....
+
+Sample Input/Output
+Enter RollNo
+10112
+Enter Name
+Manish
+1. Graduate 2. Post Graduate
+2
+Enter Papers Published
+2
+Details
+Name: Manish
+Roll:10112
+Papers Published: 2
+
+public static void print(Student student){
+	//fill code here
+	syso("Name:"+student.getName());
+	if(student instanceof PostGraduate){
+		PostGraduate pg=(PostGraduate) student;
+		syso(pg.getPapersPublished());
+	}
+}
+
+Create a class CustomException which inherits from Exception class and add the constructor from super class with String as an argument to pass the message. Accept an accountNo (int) from the user along with accountHolderName (String).
+If the accountNo is not a 6 digit number throw an exception with message "invalid account no" and allow the user to renter
+untill correct account no provided.
+
+Sample Input/Output
+Enter Account Holder Name
+Aditi Saini
+Enter Account No
+156
+Invalid accountNo
+Enter Account No
+15645
+Invalid accountNo
+Enter Account No
+156478
+Details
+Account Holder Name: Aditi Saini
+Account No: 156478
+
+WAP to accept a list of names. Prepare a map as following
+If the name is single worded, then first three chars in upper case will be the key and entire word will be the value.
+If the name is of multiple words, then first letter of each word combined to upper case will be the key and entire name will be the value.
+
+Sample Input
+3
+India
+west indies
+world health organization
+
+Sample Output
+{IND=India,WI=west indies,WHO=world health organization}
+
+WAP to accept the details of a player, create a Player object
+and save the record into the database. If inserted properly, 
+display "Record inserted". [INSERT]
+
+WAP to accept the palyer id and print the details of a player, after creating a Player object. [SELECT]
+
+WAP to read from console and write into a file.
+WAP to read from file and display on the console.
+
+A demo silimar to ICT preparation:
+It will be an end to end demo where you have to read a file,
+perform certain computations and store the processed data into the table of the database.
+
+Electric Bill System
+consumers.csv
+c1001,Jan-22,17423,17490
+c1031,Jan-22,17573,15586
+c1027,Jan-22,17423,17505
+
+create table consumer
+(
+consumerid int primary key,
+units int not null,
+billmonth varchar(20) not null,
+billable decimal(7,2) not null
+);
+
+Calculate the billable amount as per the below slab:
+units <=50, 3.5 per unit
+units >50 and <=100, 4.05 per unit
+units >100 and <=250, 4.75 per unit
+units >250, 5.00 per unit
+
+Create the following classes:
+DbUtil.java
+database.properties
+Consumer
+ConsumerService | read the file create the List of consumers
+Compute the bill amount and save the records in the database table.
+Main | Create an instance of ConsumerService and invoke the methods accordingly.
+
+Create a Java Project ICTPrep
+Add the mysql-connector.jar file
+Add the database.properties file
+Add the DbUtil class in your project
+
+TBD
+18th Feb : Fri
+Design Principles - SOLID [05-01-DP]
+Design Patterns
+	- Singleton [05-02-DP]
+	- Abstract Factory [05-02-DP]
+	- Builder Pattern [05-03-DP]
+
+19th Feb: Sat
+	- Adapter factory [05-03-DP]
+	- Façade Pattern [05-04-DP]
+	- Chain of Responsibility [05-04-DP] 
+
+ICT enabled: We need to complete all the design pattern and principles questions and get then evaluated on or before 24th 
+Feb
+21st Feb: Mon
+	- Mediator
+	- Observer
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

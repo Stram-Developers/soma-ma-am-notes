@@ -1,0 +1,270 @@
+Inheritance (IS A) relationship
+Method Overriding
+Runtime Polymorphism
+Explored the Object class
+Abstract class
+
+TBD
+Interface
+*Collection Framework|Exception Handling
+
+Points:
+a) Java supports single inheritance hence we can only inherit a single class but it also supports multi level inheritance.
+It means a class inherits a base class which in turn inherits
+another base class.
+b) The base class contains the common attributes & behaviour(methods) to be shared/modified by the derived classes.
+c) Only the non private data members are shared with the derived classes.
+d) The derived class inherits only the instance methods and variables( not the static or final methods or variables).
+e) A class when declared final cannot be inherited.
+Ex: java.lang.String class is such an example
+A method when declared final cannot be overridden.
+A variable declared final cannot be modified.
+f) The constructors are never inherited or overridden
+g) Using super() we call the default no arg cons defined in the 
+immediate super class.
+h) The java.lang.Object class is the root class in the Java hierarchy.
+
+What is the use of super in base class?
+Either directly or indirectly every class in Java inherits the
+java.lang.Object class. The super() call is used to invoke the
+base class default(no arg) constructor.
+
+Why we need to override an inherited method?
+We override an inherited method to modify or improvise on its working. We donot change the definition of the method but change the logic within the body of the method.
+
+Is there any other use of super keyword? Yes, it can also be used to access the overridden method from the base class or to access 
+a variable inherited from base class.
+
+Example:
+class Account also has the withdraw() method. In SavingsAccount
+class, you have overridden the withdraw() method. During that time, you have also tried to access the withdraw() method  from
+base class (Account).
+
+	//overriding
+	public double withdraw(double amount) {
+		if(balance-amount<=1000) {
+			System.out.println("Insufficient Funds,Transaction Aborted"); 
+		}else {
+			super.withdraw(amount);
+		}
+		return balance;
+	}
+
+The base class  (Account)method is overridden
+The derived class (Savings Account)method is overriding
+
+What are the rules to be followed during method overriding?
+a) The overriden and overriding method must have same name and same signature.
+b) The access modifier of the overridden method should be same or lesser than the access modifier of the overriding method.
+c) The return type of the overridden method should be same or
+super class of the return type of the overriding method.
+
+String to primitive data type is not possible.
+String = PDT we take the help of wrapper class.
+int num=Integer.parseInt("56");
+String s=Integer.toString(48);
+int has a Wrapper class for it called Integer.
+
+Runtime Polymorphism
+Polymorphism= Poly(multiple)+Morphos(Forms)
+We have static polymorphism (method overloading) and runtime polymorphism (the method invocation which depends on the object's type)
+
+We use the reference variable of base type (because every sub class IS A super type as well)
+Every circle IS A shape
+Every Dog IS A Mammal
+
+displayArea(sq);// where sq is an object of type Square
+The JVM will invoke the area() method of Square class.
+
+displayArea(cr);// where cr is an object of type Circle
+The JVM will invoke the area() method of Circle class.
+
+Example:
+class Shape{
+	double dim;
+	double area() {
+		return 0;
+	}
+}
+class Circle extends Shape{
+	double area() {
+		return Math.PI*Math.pow(dim,2);
+	}
+}
+class Square extends Shape{
+	double area() {
+		return dim*dim;
+	}
+}
+public class Demo {
+	static void displayArea(Shape c) {
+		System.out.println(String.format("%.2f",c.area()));
+	}
+	public static void main(String[] args) {
+		Scanner sc=new Scanner(System.in);
+		System.out.println("[S]quare,[C]ircle,[T]rianlge");
+		Shape shape=null;
+		String opt=sc.nextLine();
+		
+		if(opt.equalsIgnoreCase("S")) {
+			shape=new Square();
+			System.out.println("Dimension");
+			shape.dim=sc.nextDouble();
+		}else if(opt.equalsIgnoreCase("C")) {
+			shape=new Circle();
+			System.out.println("Dimension");
+			shape.dim=sc.nextDouble();
+		}else if(opt.equalsIgnoreCase("t")) {
+			shape=new Triangle();
+			System.out.println("Dimension");
+			shape.dim=sc.nextDouble();
+		}
+		
+		//System.out.print("Area of Circle: ");
+		//System.out.print("Area of Square: ");
+		displayArea(shape);	
+			
+		sc.close();
+	}
+}
+
+We have used reference variable of super type which is assigned object of sub type based on some concept at runtime.
+
+Use of instanceof operator to find if the reference variable is an instance of some derived class or the other.
+
+public class Demo {
+	static void displayArea(Shape c) {
+		System.out.println(String.format("%.2f",c.area()));
+	}
+	public static void main(String[] args) {
+		Scanner sc=new Scanner(System.in);
+		System.out.println("[S]quare,[C]ircle,[T]rianlge,[R]ectangle");
+		Shape shape=null;
+		String opt=sc.nextLine();
+		
+		if(opt.equalsIgnoreCase("S")) {
+			shape=new Square();			
+		}else if(opt.equalsIgnoreCase("C")) {
+			shape=new Circle();			
+		}else if(opt.equalsIgnoreCase("t")) {
+			shape=new Triangle();
+		}else if(opt.equalsIgnoreCase("r")) {
+			shape=new Rectangle();			
+		}
+		System.out.println("Dimension");
+		shape.dim=sc.nextDouble();
+		
+		if(shape instanceof Triangle) {
+			System.out.println("Base");
+			//downcasting
+			Triangle t=(Triangle)shape;
+			t.base=sc.nextDouble();
+		}else if(shape instanceof Rectangle) {
+			System.out.println("Breadth");
+			Rectangle r=(Rectangle)shape;
+			r.breadth=sc.nextDouble();
+		}
+		
+		displayArea(shape);			
+		sc.close();
+	}
+}
+
+Explore the java.lang.Object class.
+The Object class provides certain instance methods which every 
+other class does inherit and can override. The getClass() cannot be overridden because the method is declared final.
+We can ovveride the
+a) toString() || displays the class name along with @ symbol and hexadecimal represenation of the hashcode.We can override as per our concept.
+b) equals() || matches the memory address allocated in the JVM heap and return boolean response. We can override as per our concept.
+
+The String class and all the wrapper classes hve already overriden the equals() method.
+
+Example:
+class Person{
+	String name;
+	String city;
+	public String toString() {
+		return name+" says hello";
+	}
+	public Person(String name, String city) {
+		super();
+		this.name = name;
+		this.city = city;
+	}
+	public Person() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
+	public boolean equals(Object obj) {
+		Person p=(Person)obj;
+		if(p.name.equals(this.name) &&
+				p.city.equals(this.city)){
+			return true;
+		}
+		return false;
+	}
+}
+public class Demo2 {
+	public static void main(String[] args) {
+		Person person1=new Person("Suresh","Kota");
+		Person person2=new Person("Suresh","Kochi");
+		System.out.println(person1.getClass());
+		//Class@HexCode
+		System.out.println(person1.toString());
+		System.out.println(person1.equals(person2));//boolean
+	}
+}
+
+Use of abstract keyword
+a) When added to a method, we cannot complete the method in that
+class. Any derived class which inherits the base class having such
+a method MUST OVERRIDE the abstract method.
+b) When added to a class, we can not create an object of abstract class.
+
+An abstract method cannot be final and a final method cannot be
+abstract.
+An abstract class can have non abstract methods, constructors defined in them.
+
+Example:
+abstract class Vehicle{
+	abstract public void accelerate() ;
+	Vehicle(){
+		System.out.println("I am a vehicle");
+	}
+}
+class Car extends Vehicle{
+	@Override
+	public void accelerate() {
+		System.out.println("The car accelerates");		
+	}	
+}
+public class Main3 {
+	public static void main(String[] args) {
+		Vehicle v=new Car();
+		v.accelerate();
+	}
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

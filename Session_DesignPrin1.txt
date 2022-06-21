@@ -1,0 +1,195 @@
+Design Principles - SOLID [05-01-DP]
+Design Patterns
+	- Singleton [05-02-DP]
+	- Abstract Factory [05-02-DP]	
+
+https://www.tutorialspoint.com/design_pattern/builder_pattern.htm
+
+You will create a Java Project in Eclipse IDE
+Add the classes and write the code according to the question.
+Create a zip file of the project and upload/submit on tekstac 
+platform.  
+DP02
+	singleton
+	abstract_factory
+
+05-01-DP,05-02-DP gets evaluated, CC gets enabled and you get the invitation. Please complete by 11:00 am of 21st Feb 2022.
+
+05-03-DP till 05-06-DP gets evaluated, ICT for stage 1 gets enabled and you get the invitation.Please complete by 11:00 am of 23rd Feb 2022.
+
+What is the difference between design principles and design patterns?
+Design Principles provide high level guidelines to design better software applications. They do not provide implementation guidelines and are not bound to any programming language.
+
+Design Patterns provides low-level solutions related to implementation, of commonly occurring object-oriented problems.
+
+FYR: https://www.tutorialsteacher.com/articles/difference-between-design-principle-and-design-pattern
+
+SOLID Design Principles
+
+Single Responsibility 
+Open/Closed 
+Liskov Substitution 
+Interface Seggregation
+Dependency Inversion
+
+According to the "Single Responsibility" principle, a class should have only one single responsibility/functionality. This will help in making the testing of the codes easier and troubleshooting/debugging the codes better and easier.
+ 
+Consumer class had all the private data variables.
+ConsumerService class had all the business requirement related methods.
+ConsumerRepository class with the responsibility to interact with the db for performing CRUD operations.
+
+Open to extension, Closed to modification
+"Open for extension" means that you should design your classes so that new functionality can be added as new requirements are generated. "Closed for modification" means that once you developed a class you should never modify it, except to correct bugs.
+
+class Vehicle{}
+class VehicleService{
+	public String getLicense(){
+		//some code
+	}	
+}
+class BikeService extends VehicleService{
+	public void bikeWheelsChange(){}
+}
+class CarService which extends VehicleService{
+	public void someCarRelatedMeth(){}
+}
+
+According to "Liskov Substitution" principle, the object of the super class should be replaceable with the object of any of its subclasses (derived class) without breaking the system.
+
+class Account{
+	public double deposit(int amount){}
+	public double withdraw(int amount){}
+}
+class SavingsAccount extends Account{
+	public double withdraw(int amount){}
+}
+class FixedDepositAccount extends Account{}
+
+class BankingAppService {
+	public void performTransaction(Account account){
+		//code here
+		if(account instanceof FDAccount{
+			Syso("unsupported operation");
+		}
+	}
+}
+class Main{
+	psvm(){
+		BankingAppService bas=new BankingAppService();
+	bas.performTransaction(new FixedDepositAccount());
+	}
+}
+
+-- Solution --
+class Account{
+	public double deposit(int amount){}
+}
+class WithdrawalAccount extends Account{
+	public double withdraw(int amount){}
+}
+class SavingsAccount extends WithdrawalAccount{
+	public double withdraw(int amount){}
+}
+class FixedDepositAccount extends Account{}
+
+class BankingAppService {
+	public void performDepositTransaction(Account depositAccount){}
+	public void performBasicTransaction(WithdrwalAccount basicAccounts){}
+}
+
+According to "Interface Segregation" principle, no client class shall be forced to use methods they do not require.
+
+interface Payment{
+	initiatePayments();
+	getPayment();
+	checkLastPaymentStatus();
+	initiateLoanSettlement();
+	initiateLoanPaymentOfInstallment();
+}
+class Bank implements Payment{}
+
+Solution:
+interface Payment{	
+	getPayment();
+	checkLastPaymentStatus();	
+}
+interface BankPayment extends Payment{
+	initiatePayments();
+}
+interface LoanPayment extends Payment{
+	initiateLoanSettlement();
+	initiateLoanPaymentOfInstallment();
+}
+class Bank implemens BankPayment{
+	//only 3
+}
+class Loan implements LoanPayment{
+	//only 4
+}
+
+FYR: https://www.infoworld.com/article/2955937/implementing-the-interface-segregation-principle.html
+
+According to "Dependency Inversion" principle, high level modules should not depend on low level modules but should depend on their abstractions.
+
+Customer [high level] reads the/interacts with MenuCard. He does not come to know about CookOne,CookTwo or any other Cook
+[low level].
+
+StudentService [high level]
+
+StudentRepository interface
+	+ saveStudentRecord(Student s): boolean;
+	+ editStudentRecord(int rollNo);
+	+ removeStudentRecord(int rollNo); 
+	+ fetchStudentRecord(int rollNo);
+
+[low level]---------------------------------------------
+class StudentRepositoryImpl implements StudentRepository{
+	//override the abstract methods
+}
+
+class TraineeRepositoryImpl implements StudentRepository{
+}
+
+GangOfFour Patterns (GoF patterns)
+- behavioral
+- creational
+- structural 
+
+Singleton | Ensures only one instance of an object is created.
+The class will
+a) have a private no arg default constructor
+b) have private static reference variable of type class
+c) have public static method with the return type as class type
+
+class DBConn{
+	private static DBConn instance;
+	private DBConn(){}
+	public static DBConn getInstance(){
+		if(instance==null)
+			instance=new DBConn();
+		return instance;
+	} 
+}
+
+class Main{
+	psvm(...){
+		DBConn db=DBConn.getInstance();
+		Syso(db);
+		
+	}
+}
+
+Factory |Creates objects without specifying the exact class used to create.
+https://codeonsunday.wordpress.com/2014/08/17/abstract-factory-design-pattern/
+
+TBD: [09:00 AM]
+- Builder Pattern [05-03-DP]
+- Adapter factory [05-03-DP]
+- Facade [05-04-DP]
+- Chain of Responsibility [05-04-DP]
+
+
+
+
+
+	
